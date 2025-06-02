@@ -1,0 +1,62 @@
+spring:
+  profiles:
+    active: local
+ # 아래 mail 설정 해줘야함(실제 서버에서 메일 보내려면)
+  mail:
+    host: smtp.test.com
+    port: 465
+    username: test@mail.com
+    password: 1234
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            trust: smtp.test.com
+          starttls:
+            enable: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  datasource:
+    url: jdbc:h2:mem:testdb  # 메모리 DB (실행 중에만 존재)
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+    jpa:
+      hibernate:
+        ddl-auto: create-drop  # 개발 중에는 create, update, create-drop 중 택 1
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+
+    h2:
+      console:
+        enabled: true           # 웹으로 콘솔 접속 가능
+        path: /h2-console       # 접속 URL: http://localhost:8080/h2-console
+
+code:
+  local-save-dir : C:/tmp/code-files
+  save-dir: /tmp/code-files
+  save-file: "solution"
+#  docker:
+#    python:
+#      image: "python:3.11"
+#      file-extension: ".py"
+#      execute-command: "python /app/solution.py"
+#    java:
+#      image: "openjdk:17"
+#      file-extension: ".java"
+#      execute-command: "javac /app/Solution.java && java Solution"
+#    c:
+#      image: "gcc"
+#      file-extension: ".c"
+#      execute-command: "gcc /app/solution.c -o /app/solution && /app/solution"
+#logging:
+#  level:
+#    org.springframework.mail: DEBUG
