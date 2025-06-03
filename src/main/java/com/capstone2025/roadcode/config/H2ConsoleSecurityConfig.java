@@ -18,7 +18,8 @@ public class H2ConsoleSecurityConfig {
         http.securityMatcher(PathRequest.toH2Console())
                 .csrf(csrf -> csrf.disable())
                 .headers((headers) -> headers.frameOptions(frame -> frame.sameOrigin()))
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**").permitAll());
 
         return http.build();
     }

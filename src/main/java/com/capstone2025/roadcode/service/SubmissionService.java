@@ -25,9 +25,9 @@ public class SubmissionService {
 
     private final TestcaseRepository testcaseRepository;
 
-    @Value("${code.local-save-dir}") //로컬 환경 path(서버로 변경하면 바꿔야함)
+    @Value("${spring.code.save-dir}") //로컬 환경 path(서버로 변경하면 바꿔야함)
     private String codeSaveDir;
-    @Value("${code.save-file}")
+    @Value("${spring.code.save-file}")
     private String codeFileName;
 
     // 풀이 제출
