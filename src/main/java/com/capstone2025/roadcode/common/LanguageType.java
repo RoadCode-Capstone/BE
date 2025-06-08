@@ -12,9 +12,9 @@ import java.util.Arrays;
 @Getter
 public enum LanguageType {
     // enum은 내부적으로 private final이 필드로 생성되는 하나의 클래스. 따라서 noArgsConstructor은 당연히 생성 불가. 무조건 필드안에 값이 있어야함. 그게 enum임
-    PYTHON("python:3.11", ".py", "python /app/solution.py"),
+    PYTHON("python:3.11", ".py", "python /app/Solution.py"),
     JAVA("openjdk:17", ".java", "javac /app/Solution.java && java Solution"),
-    C("gcc", ".c", "gcc /app/solution.c -o /app/solution && /app/solution");
+    C("gcc", ".c", "gcc /app/Solution.c -o /app/Solution && /app/Solution");
 
     private final String image;
     private final String extension;

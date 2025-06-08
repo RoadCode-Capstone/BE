@@ -66,7 +66,7 @@ public class SubmissionService {
         }
 
         // 4. 임시 파일 삭제
-        deleteCodeDirectory(ctx.getCodeDir());
+        //deleteCodeDirectory(ctx.getCodeDir());
 
         // 5. 전체 결과를 응답에 추가
         return new SubmitSolutionResponse(allPassed, testcaseResults);

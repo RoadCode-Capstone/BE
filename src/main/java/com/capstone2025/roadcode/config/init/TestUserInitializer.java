@@ -30,7 +30,8 @@ public class TestUserInitializer implements CommandLineRunner {
                 .password(passwordEncoder.encode("1234"))
                 .nickname("테스트유저")
                 .provider(AuthProvider.LOCAL)
-                .role("ROLE_USER")
+                .role("USER")
+                .isDeleted(false)
                 .build();
 
         memberRepository.save(testUser);

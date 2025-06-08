@@ -51,7 +51,7 @@ spring:
 
   code:
     save-dir : C:/tmp/code-files
-    save-file: "solution"
+    save-file: "Solution"
 
 ---
 spring:
@@ -64,7 +64,7 @@ spring:
       allow-fixed-token: true
 
   datasource:
-    url: jdbc:mysql://localhost:3306/roadcode?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://db-roadcode.ctw84yo0m2vd.ap-northeast-2.rds.amazonaws.com:3306/roadcode
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: admin
     password: roadcode
@@ -76,6 +76,7 @@ spring:
       properties:
         hibernate:
           format_sql: true
+        dialect: org.hibernate.dialect.MYSQLDialect
 
   mail:
     host: smtp.naver.com
@@ -98,7 +99,7 @@ spring:
 
   code:
     save-dir : /tmp/code-files
-    save-file: "solution"
+    save-file: "Solution"
 
   logging:
     level:
@@ -115,7 +116,7 @@ spring:
       on-profile: prod
 
   datasource:
-    url: jdbc:mysql://3.35.192.94:3306/roadcode
+    url: jdbc:mysql://localhost:13306/roadcode
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: admin
     password: roadcode
@@ -149,7 +150,7 @@ spring:
 
   code:
     save-dir: /tmp/code-files
-    save-file: "solution"
+    save-file: "Solution"
 
 #  docker:
 #    python:

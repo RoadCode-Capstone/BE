@@ -60,5 +60,8 @@ public class Problem extends CreatedOnlyEntity {
     @OneToMany(mappedBy = "problem")
     private List<Submission> submissions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "problem")
+    private List<ProblemTag> problemTags = new ArrayList<>();
+
 
 }

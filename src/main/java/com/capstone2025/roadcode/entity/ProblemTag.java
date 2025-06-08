@@ -1,7 +1,9 @@
 package com.capstone2025.roadcode.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 public class ProblemTag {
     @Id
