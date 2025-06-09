@@ -51,3 +51,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+jar {
+	archiveBaseName.set('RoadcodeApplication') // 파일 이름 (확장자 제외)
+	archiveVersion.set('') // 버전 안넣음 (-0.0.1-SNAPSHOT 같은거)
+}
