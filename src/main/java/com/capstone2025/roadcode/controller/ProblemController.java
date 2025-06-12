@@ -5,11 +5,9 @@ import com.capstone2025.roadcode.dto.ProblemInfoResponse;
 import com.capstone2025.roadcode.dto.ProblemResponseDto;
 import com.capstone2025.roadcode.service.ProblemService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.util.ToStringUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,8 +26,17 @@ public class ProblemController {
 
     // 문제 목록 전체 조회
     @GetMapping
-    public ResponseEntity<List<ProblemResponseDto>> getAllProblems() {
-        List<ProblemResponseDto> response = problemService.getAllProblemsWithTags();
+    public ResponseEntity<List<ProblemResponseDto>> getProblems(
+            @RequestParam(required = false) List<Long> ids
+    ) {
+        List<ProblemResponseDto> response;
+
+        if (ids != null && !ids.isEmpty()) {
+            response = problemService.getProblemsByIdsWithTags(ids);
+        } else {
+            response = problemService.getAllProblemsWithTags();
+        }
+
         return ResponseEntity.ok(response);
     }
 }

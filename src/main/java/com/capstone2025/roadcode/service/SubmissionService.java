@@ -1,17 +1,21 @@
 package com.capstone2025.roadcode.service;
 
 import com.capstone2025.roadcode.common.LanguageType;
-import com.capstone2025.roadcode.dto.DockerExecutionContext;
-import com.capstone2025.roadcode.dto.SubmitSolutionRequest;
-import com.capstone2025.roadcode.dto.SubmitSolutionResponse;
-import com.capstone2025.roadcode.dto.TestcaseResult;
+import com.capstone2025.roadcode.dto.*;
+import com.capstone2025.roadcode.entity.Member;
+import com.capstone2025.roadcode.entity.Problem;
+import com.capstone2025.roadcode.entity.Submission;
 import com.capstone2025.roadcode.entity.Testcase;
 import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
+import com.capstone2025.roadcode.repository.MemberRepository;
+import com.capstone2025.roadcode.repository.ProblemRepository;
+import com.capstone2025.roadcode.repository.SubmissionRepository;
 import com.capstone2025.roadcode.repository.TestcaseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -24,6 +28,9 @@ import java.util.*;
 public class SubmissionService {
 
     private final TestcaseRepository testcaseRepository;
+    private final ProblemRepository problemRepository;
+    private final MemberRepository memberRepository;
+    private final SubmissionRepository submissionRepository;
 
     @Value("${spring.code.save-dir}") //로컬 환경 path(서버로 변경하면 바꿔야함)
     private String codeSaveDir;
@@ -31,11 +38,16 @@ public class SubmissionService {
     private String codeFileName;
 
     // 풀이 제출
+    @Transactional
     public SubmitSolutionResponse submitSolution(String email, Long problemId, SubmitSolutionRequest request){
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+
         String language = request.getLanguage();
         String code = request.getSourceCode();
-
-        // db 저장 코드 추가(마지막에)
 
         List<Testcase> testcases = testcaseRepository.findByProblemId(problemId);
         if (testcases.size() == 0) {
@@ -66,7 +78,11 @@ public class SubmissionService {
         }
 
         // 4. 임시 파일 삭제
-        //deleteCodeDirectory(ctx.getCodeDir());
+        deleteCodeDirectory(ctx.getCodeDir());
+
+        // db에 저장
+        Submission submission = Submission.create(problem, member, code, language, allPassed);
+        submissionRepository.save(submission);
 
         // 5. 전체 결과를 응답에 추가
         return new SubmitSolutionResponse(allPassed, testcaseResults);
@@ -174,5 +190,29 @@ public class SubmissionService {
         } catch (Exception e) {
             throw new CustomException(ErrorCode.FILE_DELETE_FAILED);
         }
+    }
+
+    public LevelTestResultResponse submitLevelTest(String email, LevelTestSubmissionsRequest request) {
+
+        List<Boolean> result = new ArrayList<>();
+
+        for(SubmitLevelTestRequest solution : request.getSubmissions()){
+
+            SubmitSolutionRequest submitSolutionRequest = new SubmitSolutionRequest(
+                    solution.getLanguage(), solution.getSourceCode());
+            SubmitSolutionResponse response = submitSolution(email, solution.getProblemId(), submitSolutionRequest);
+
+            if(response.isAllPassed()) {
+                result.add(true);
+            } else {
+                result.add(false);
+            }
+        }
+
+        long count = result.stream()
+                .filter(b -> b == true)
+                .count();
+
+        return new LevelTestResultResponse(request.getSubmissions().size(), result, (int)count);
     }
 }

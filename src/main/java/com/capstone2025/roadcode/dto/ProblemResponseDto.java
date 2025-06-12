@@ -20,6 +20,6 @@ public class ProblemResponseDto {
     private String timeLimit;
     private String memoryLimit;
     private String url;
-    private LocalDateTime createdAt;
+    //private LocalDateTime createdAt;
     private List<String> tags;
 }

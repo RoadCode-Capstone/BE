@@ -46,13 +46,27 @@ dependencies {
 	implementation 'com.mysql:mysql-connector-j:8.0.33'
 
 	implementation 'com.jcraft:jsch:0.1.55'
+
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0' // swagger
+
+	//ai
+	testImplementation platform('org.junit:junit-bom:5.10.0')
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+
+	implementation 'com.google.code.gson:gson:2.10.1'       // GSON
+	implementation 'org.json:json:20230227'                 // JSON
+	implementation 'com.squareup.okhttp3:okhttp:4.12.0'     // HTTP 클라이언트
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
 
-jar {
+bootJar {
 	archiveBaseName.set('RoadcodeApplication') // 파일 이름 (확장자 제외)
 	archiveVersion.set('') // 버전 안넣음 (-0.0.1-SNAPSHOT 같은거)
+}
+
+jar {
+	enabled = false
 }

@@ -41,7 +41,31 @@ public class ProblemService {
                         problem.getTimeLimit(),
                         problem.getMemoryLimit(),
                         problem.getUrl(),
-                        problem.getCreatedAt(),
+                        //problem.getCreatedAt(),
+                        problem.getProblemTags().stream()
+                                .map(pt -> pt.getTag().getName())
+                                .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public List<ProblemResponseDto> getProblemsByIdsWithTags(List<Long> ids) {
+        List<Problem> problems = problemRepository.findAllByIdInWithTags(ids);
+
+        return problems.stream()
+                .map(problem -> new ProblemResponseDto(
+                        problem.getId(),
+                        problem.getContestId(),
+                        problem.getIndex(),
+                        problem.getName(),
+                        problem.getRating(),
+                        problem.getDescription(),
+                        problem.getInputDescription(),
+                        problem.getOutputDescription(),
+                        problem.getTimeLimit(),
+                        problem.getMemoryLimit(),
+                        problem.getUrl(),
+                        //problem.getCreatedAt(),
                         problem.getProblemTags().stream()
                                 .map(pt -> pt.getTag().getName())
                                 .collect(Collectors.toList())

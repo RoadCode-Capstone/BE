@@ -2,13 +2,16 @@ package com.capstone2025.roadcode.entity;
 
 import com.capstone2025.roadcode.common.CreatedOnlyEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Submission extends CreatedOnlyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +36,14 @@ public class Submission extends CreatedOnlyEntity {
 
     @OneToMany(mappedBy = "submission")
     private List<Review> reviews = new ArrayList<>();
+
+    public static Submission create(Problem problem, Member member, String sourceCode, String language, boolean isSuccess) {
+        return Submission.builder()
+                .problem(problem)
+                .member(member)
+                .sourceCode(sourceCode)
+                .language(language)
+                .isSuccess(isSuccess)
+                .build();
+    }
 }
