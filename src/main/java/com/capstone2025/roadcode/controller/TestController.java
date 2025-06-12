@@ -10,8 +10,4 @@ public class TestController {
     public String hii(){
         return "success";
     }
-    @RequestMapping("/run")
-    public String run(){
-        return "go running";
-    }
 }
