@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public class RoadmapRequest {
     private String type;
-    private String algorithm;
+    private String category;
     private int dailyGoal;
     private int levelTestResult;
 }

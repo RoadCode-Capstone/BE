@@ -12,8 +12,8 @@ import com.capstone2025.roadcode.repository.RoadmapProblemRepository;
 import com.capstone2025.roadcode.repository.RoadmapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,29 +60,30 @@ public class RoadmapService {
     }
 
     // 문제 list 로드맵 db에 저장
+    @Transactional // 문제 못찾는 경우, roadmap save도 취소
     public void createRoadmap(RoadmapRequest request, String email) {
 
         String type =  request.getType();
-        String algorithm = request.getAlgorithm();
+        String category = request.getCategory();
 
         List<Long> problemIds = aiService.createRoadmap(
                 type,
-                algorithm,
+                category,
                 request.getDailyGoal(),
                 request.getLevelTestResult()
         );
 
-//        // 서버 올리기 전 삭제
-//        System.out.println(problemIds);
-//
-//        problemIds.clear();
-//        problemIds.add(1L);
-//        problemIds.add(2L);
+        // 서버 올리기 전 삭제
+        System.out.println(problemIds);
+
+        problemIds.clear();
+        problemIds.add(1L);
+        problemIds.add(2L);
 
         Member member = memberService.findByEmail(email);
 
         Roadmap roadmap = Roadmap.create(
-                member, createRoadmapName(type, algorithm), RoadmapType.valueOf(type), algorithm);
+                member, createRoadmapName(type, category), RoadmapType.valueOf(type), category);
 
 
         roadmapRepository.save(roadmap);
@@ -101,8 +102,8 @@ public class RoadmapService {
         }
     }
 
-    private String createRoadmapName(String type, String algorithm){
-        return type + " " + algorithm + " 로드맵";
+    private String createRoadmapName(String type, String category){
+        return type + " " + category + " 로드맵";
     }
 
     public List<RoadmapResponse> getRoadmaps(String email) {

@@ -18,19 +18,6 @@ import java.util.List;
 public class RoadmapController {
     private final RoadmapService roadmapService;
 
-    // 로드맵 정보 조회
-    @GetMapping("/{roadmapId}")
-    public ApiResponse<RoadmapInfoResponse> getRoadmapInfo(@PathVariable Long roadmapId) {
-        return ApiResponse.success(roadmapService.getRoadmapInfo(roadmapId));
-    }
-
-    // 로드맵 문제 목록 조회 (상세 문제 조회는 id 사용해서- ProblemController)
-    @GetMapping("/{roadmapId}/problems")
-    public ApiResponse<List<RoadmapProblemResponse>> getRoadmapProblems(@PathVariable Long roadmapId) {
-        List<RoadmapProblemResponse> problems = roadmapService.getRoadmapProblems(roadmapId);
-        return ApiResponse.success(problems);
-    }
-
     // 로드맵 생성
     @PostMapping
     public ApiResponse<String> createRoadmap(@RequestBody RoadmapRequest request, Authentication authentication) {
@@ -48,5 +35,20 @@ public class RoadmapController {
 
         return ApiResponse.success(roadmapService.getRoadmaps(email));
     }
+
+    // 로드맵 정보 조회
+    @GetMapping("/{roadmapId}")
+    public ApiResponse<RoadmapInfoResponse> getRoadmapInfo(@PathVariable Long roadmapId) {
+        return ApiResponse.success(roadmapService.getRoadmapInfo(roadmapId));
+    }
+
+    // 로드맵 문제 목록 조회 (상세 문제 조회는 id 사용해서- ProblemController)
+    @GetMapping("/{roadmapId}/problems")
+    public ApiResponse<List<RoadmapProblemResponse>> getRoadmapProblems(@PathVariable Long roadmapId) {
+        List<RoadmapProblemResponse> problems = roadmapService.getRoadmapProblems(roadmapId);
+        return ApiResponse.success(problems);
+    }
+
+
 
 }
