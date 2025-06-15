@@ -73,12 +73,12 @@ public class RoadmapService {
                 request.getLevelTestResult()
         );
 
-        // 서버 올리기 전 삭제
-        System.out.println(problemIds);
-
-        problemIds.clear();
-        problemIds.add(1L);
-        problemIds.add(2L);
+//        // 서버 올리기 전 삭제
+//        System.out.println(problemIds);
+//
+//        problemIds.clear();
+//        problemIds.add(1L);
+//        problemIds.add(2L);
 
         Member member = memberService.findByEmail(email);
 
