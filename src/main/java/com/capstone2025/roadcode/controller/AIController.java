@@ -20,16 +20,16 @@ public class AIController {
 
     private final OpenAIService openAiService;
 
-    @PostMapping("/roadmap")
-    public ApiResponse<List<Integer>> generateRoadmap(@RequestBody RoadmapRequest request) {
-        List<Integer> result = openAiService.createRoadmap(
-                request.getType(),
-                request.getAlgorithm(),
-                request.getDailyGoal(),
-                request.getLevelTestResult()
-        );
-        return ApiResponse.success(result);
-    }
+//    @PostMapping("/roadmap")
+//    public ApiResponse<List<Long>> generateRoadmap(@RequestBody RoadmapRequest request) {
+//        List<Long> result = openAiService.createRoadmap(
+//                request.getType(),
+//                request.getAlgorithm(),
+//                request.getDailyGoal(),
+//                request.getLevelTestResult()
+//        );
+//        return ApiResponse.success(result);
+//    }
 
     @PostMapping("/level-test")
     public ApiResponse<List<Integer>> generateLevelTest(@RequestBody LevelTestRequest request) {

@@ -120,7 +120,7 @@ public class OpenAIService {
     }
 
     /* 학습 로드맵 생성 함수(학습 유형, 알고리즘, 일일 학습 목표, 레벨테스트 결과) */
-    public List<Integer> createRoadmap(String type, String algorithm, int dailyGoal, int levelTestResult) {
+    public List<Long> createRoadmap(String type, String algorithm, int dailyGoal, int levelTestResult) {
         /*
         레벨 테스트 결과를 기준으로 -100 ~ +500
         총 문제 수 : 일일 학습 목표 * 14 (2주)
@@ -147,7 +147,7 @@ public class OpenAIService {
         ratingProblemCnt.put(400, 1);
 
         // 선택한 문제 아이디 리스트
-        List<Integer> problemIds = new ArrayList<>();
+        List<Long> problemIds = new ArrayList<>();
 
         // 레벨테스트 결과 최솟값 900으로 설정
         if (levelTestResult < 900) {
@@ -185,7 +185,7 @@ public class OpenAIService {
             // 선택한 문제 아이디를 리스트에 추가
             for (String id : response.trim().split(" ")) {
                 if (!id.isEmpty()) {
-                    problemIds.add(Integer.parseInt(id));
+                    problemIds.add(Long.parseLong(id));
                 }
             }
         }

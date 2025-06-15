@@ -23,7 +23,8 @@ public enum ErrorCode {
     PROBLEM_NOT_FOUND("E014", "문제를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_LANGUAGE_TYPE("E015", "지원하지 않는 언어입니다.", HttpStatus.BAD_REQUEST),
     FILE_WRITE_FAILED("E016", "소스 코드 파일 저장에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    FILE_DELETE_FAILED("E017", "소스 코드 파일 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    FILE_DELETE_FAILED("E017", "소스 코드 파일 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    ROADMAP_NOT_FOUND("E018", "로드맵을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
 
     private final String code;
     private final String message;

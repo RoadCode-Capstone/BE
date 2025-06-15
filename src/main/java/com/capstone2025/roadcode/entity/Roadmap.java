@@ -2,13 +2,16 @@ package com.capstone2025.roadcode.entity;
 
 import com.capstone2025.roadcode.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Roadmap extends BaseEntity {
 
     @Id
@@ -25,15 +28,25 @@ public class Roadmap extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RoadmapType type;
 
-    private String category;
+    private String category; // 언어의 경우 java/c/pytoh, 알고리즘의 경우 bfs 등
 
     @Enumerated(EnumType.STRING)
     private RoadmapStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "last_solved_problem_id", nullable = true)
-    private Problem problem; // 마지막으로 푼 문제 id
+//    @ManyToOne
+//    @JoinColumn(name = "last_solved_problem_id", nullable = true)
+//    private Problem problem; // 마지막으로 푼 문제 id
 
     @OneToMany(mappedBy = "roadmap") // order 기준으로 오름차순 정렬(수정 필요)
     private List<RoadmapProblem> roadmapProblems = new ArrayList<>();
+
+    public static Roadmap create(Member member, String title, RoadmapType type, String category) {
+        return Roadmap.builder()
+                .member(member)
+                .title(title)
+                .type(type)
+                .category(category)
+                .status(RoadmapStatus.IN_PROGRESS)
+                .build();
+    }
 }
