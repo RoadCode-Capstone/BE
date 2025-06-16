@@ -1,6 +1,7 @@
 package com.capstone2025.roadcode.service;
 
 import com.capstone2025.roadcode.dto.ProblemResponseDto;
+import com.capstone2025.roadcode.entity.RoadmapType;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
@@ -120,7 +121,7 @@ public class OpenAIService {
     }
 
     /* 학습 로드맵 생성 함수(학습 유형, 알고리즘, 일일 학습 목표, 레벨테스트 결과) */
-    public List<Long> createRoadmap(String type, String algorithm, int dailyGoal, int levelTestResult) {
+    public List<Long> createRoadmap(RoadmapType type, String category, int dailyGoal, int levelTestResult) {
         /*
         레벨 테스트 결과를 기준으로 -100 ~ +500
         총 문제 수 : 일일 학습 목표 * 14 (2주)
@@ -133,8 +134,8 @@ public class OpenAIService {
         List<ProblemResponseDto> problems = getProblems();
 
         // 학습 유형이 알고리즘이면 해당하는 문제 목록을 후보로 저장
-        if (type.equals("algorithm")) {
-            problems = filterByTag(problems, algorithm);
+        if (type == RoadmapType.Algorithm) {
+            problems = filterByTag(problems, category);
         }
 
         // 난이도별 개수 저장
@@ -196,7 +197,7 @@ public class OpenAIService {
     }
 
     /* 레벨테스트 생성 함수(학습 유형, 알고리즘) */
-    public List<Integer> createLevelTest(String type, String algorithm) {
+    public List<Integer> createLevelTest(RoadmapType type, String category) {
         /*
         총 문제 수 : 5
         각 문제 난이도 : 800, 1000, 1300, 1500, 1800
@@ -208,8 +209,8 @@ public class OpenAIService {
         List<ProblemResponseDto> problems = getProblems();
 
         // 학습 유형이 알고리즘이면 해당하는 문제 목록을 후보로 저장
-        if (type.equals("algorithm")) {
-            problems = filterByTag(problems, algorithm);
+        if (type == RoadmapType.Algorithm) {
+            problems = filterByTag(problems, category);
         }
 
         // 각 문제 난이도 저장

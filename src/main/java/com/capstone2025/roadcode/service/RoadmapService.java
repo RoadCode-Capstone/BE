@@ -63,7 +63,7 @@ public class RoadmapService {
     @Transactional // 문제 못찾는 경우, roadmap save도 취소
     public void createRoadmap(RoadmapRequest request, String email) {
 
-        String type =  request.getType();
+        RoadmapType type =  RoadmapType.fromString(request.getType());
         String category = request.getCategory();
 
         List<Long> problemIds = aiService.createRoadmap(
@@ -83,7 +83,7 @@ public class RoadmapService {
         Member member = memberService.findByEmail(email);
 
         Roadmap roadmap = Roadmap.create(
-                member, createRoadmapName(type, category), RoadmapType.valueOf(type), category);
+                member, createRoadmapName(type, category), type, category);
 
 
         roadmapRepository.save(roadmap);
@@ -102,8 +102,8 @@ public class RoadmapService {
         }
     }
 
-    private String createRoadmapName(String type, String category){
-        return type + " " + category + " 로드맵";
+    private String createRoadmapName(RoadmapType type, String category){
+        return type.toString() + " " + category + " 로드맵";
     }
 
     public List<RoadmapResponse> getRoadmaps(String email) {

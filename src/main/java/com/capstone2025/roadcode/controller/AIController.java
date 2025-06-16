@@ -2,10 +2,9 @@ package com.capstone2025.roadcode.controller;
 
 import com.capstone2025.roadcode.common.ApiResponse;
 import com.capstone2025.roadcode.dto.LevelTestRequest;
-import com.capstone2025.roadcode.dto.RoadmapRequest;
+import com.capstone2025.roadcode.entity.RoadmapType;
 import com.capstone2025.roadcode.service.OpenAIService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,8 +33,8 @@ public class AIController {
     @PostMapping("/level-test")
     public ApiResponse<List<Integer>> generateLevelTest(@RequestBody LevelTestRequest request) {
         List<Integer> result = openAiService.createLevelTest(
-                request.getType(),
-                request.getAlgorithm()
+                RoadmapType.fromString(request.getType()),
+                request.getCategory()
         );
         return ApiResponse.success(result);
     }
