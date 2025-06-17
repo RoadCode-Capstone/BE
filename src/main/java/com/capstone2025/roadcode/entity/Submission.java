@@ -10,8 +10,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Submission extends CreatedOnlyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +34,16 @@ public class Submission extends CreatedOnlyEntity {
 
     @OneToMany(mappedBy = "submission")
     private List<Review> reviews = new ArrayList<>();
+
+    @Builder
+    private Submission(Problem problem, Member member, String sourceCode, String language, boolean isSuccess) {
+
+        this.problem = problem;
+        this.member = member;
+        this.sourceCode = sourceCode;
+        this.language = language;
+        this.isSuccess = isSuccess;
+    }
 
     public static Submission create(Problem problem, Member member, String sourceCode, String language, boolean isSuccess) {
         return Submission.builder()

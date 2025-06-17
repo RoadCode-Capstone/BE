@@ -8,6 +8,7 @@ import okhttp3.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,7 +21,9 @@ import static java.util.Collections.emptyList;
 
 @Service
 public class OpenAIService {
-    private static final String OPENAI_API_KEY = getApiKey();
+    @Value("${openai.api.key}")
+    private String apiKey;
+//    private static final String OPENAI_API_KEY = getApiKey();
 
 //    public static void main(String[] args) {
 ////        List<Problem> problems = getProblems();   // TEST
@@ -29,15 +32,15 @@ public class OpenAIService {
 //    }
 
     /* config.properties에서 OpenAI API key 조회 함수 */
-    public static String getApiKey() {
-        try (InputStream in = OpenAIService.class.getClassLoader().getResourceAsStream("config.properties")) {
-            Properties props = new Properties();
-            props.load(in);
-            return props.getProperty("openai.api.key");
-        } catch (Exception e) {
-            throw new RuntimeException("API 키 로딩 실패", e);
-        }
-    }
+//    public static String getApiKey() {
+//        try (InputStream in = OpenAIService.class.getClassLoader().getResourceAsStream("config.properties")) {
+//            Properties props = new Properties();
+//            props.load(in);
+//            return props.getProperty("openai.api.key");
+//        } catch (Exception e) {
+//            throw new RuntimeException("API 키 로딩 실패", e);
+//        }
+//    }
 
     /* 전체 문제 목록 조회 함수 */
     public List<ProblemResponseDto> getProblems() {
@@ -92,7 +95,7 @@ public class OpenAIService {
         // HTTP 요청
         Request request = new Request.Builder()
                 .url("https://api.openai.com/v1/chat/completions")
-                .addHeader("Authorization", "Bearer " + OPENAI_API_KEY)
+                .addHeader("Authorization", "Bearer " + apiKey)
                 .addHeader("Content-Type", "application/json")
                 .post(RequestBody.create(
                         requestBody.toString(),

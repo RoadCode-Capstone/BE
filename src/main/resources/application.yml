@@ -2,6 +2,10 @@ spring:
   profiles:
     active: local
 ---
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
+
 spring:
   config:
     activate:
@@ -54,6 +58,10 @@ spring:
     save-file: "Solution"
 
 ---
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
+
 spring:
   config:
     activate:
@@ -110,6 +118,10 @@ spring:
           hikari:
             DEBUG
 ---
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
+
 spring:
   config:
     activate:

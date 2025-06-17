@@ -11,8 +11,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Table( uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"email", "provider"}) // 복합 유니크 체크 ( email+provider 는 무조건 unique 여야함)
         }
@@ -60,6 +58,32 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<Point> point = new ArrayList<>();
 
+    @Builder
+    private Member(String email, String password, String nickname, AuthProvider provider) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.provider = provider;
+    }
+
+    public static Member localCreate(String email, String password, String nickname) {
+        return Member.builder()
+                .email(email)
+                .password(password)
+                .nickname(nickname)
+                .provider(AuthProvider.LOCAL)
+                .build();
+    }
+
+    public static Member socialCreate(String email, String nickname, AuthProvider provider) {
+        return Member.builder()
+                .email(email)
+                .password(null) // 또는 uuid
+                .nickname(nickname)
+                .provider(provider)
+                .build();
+    }
+
     public void updatePassword(String rawPassword, PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(rawPassword);
     }
@@ -72,16 +96,6 @@ public class Member extends BaseEntity {
 
     public void markDeleted() {
         this.isDeleted = true;
-    }
-
-    public static Member create(String email, String password, String nickname) {
-        return Member.builder()
-                .email(email)
-                .password(password)
-                .nickname(nickname)
-                .provider(AuthProvider.LOCAL)
-                .role("USER")
-                .build();
     }
 
     public void addPoint(int point){

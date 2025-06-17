@@ -25,14 +25,7 @@ public class TestUserInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if(memberRepository.existsByEmailAndProviderAndIsDeletedFalse("test@example.com", AuthProvider.LOCAL)) return;
 
-        Member testUser = Member.builder()
-                .email("test@example.com")
-                .password(passwordEncoder.encode("1234"))
-                .nickname("테스트유저")
-                .provider(AuthProvider.LOCAL)
-                .role("USER")
-                .isDeleted(false)
-                .build();
+        Member testUser = Member.localCreate("test@example.com", passwordEncoder.encode("1234"), "테스트유저");
 
         memberRepository.save(testUser);
     }

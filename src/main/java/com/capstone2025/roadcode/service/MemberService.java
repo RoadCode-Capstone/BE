@@ -21,7 +21,7 @@ public class MemberService {
     // 회원 생성
     @Transactional
     public Member createMember(String email, String encodedPassword, String nickname) {
-        Member member = Member.create(email, encodedPassword, nickname);
+        Member member = Member.localCreate(email, encodedPassword, nickname);
         memberRepository.save(member);
         return member;
     }
