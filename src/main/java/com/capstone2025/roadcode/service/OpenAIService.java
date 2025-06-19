@@ -2,6 +2,8 @@ package com.capstone2025.roadcode.service;
 
 import com.capstone2025.roadcode.dto.ProblemResponseDto;
 import com.capstone2025.roadcode.entity.RoadmapType;
+import com.capstone2025.roadcode.exception.CustomException;
+import com.capstone2025.roadcode.exception.ErrorCode;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ public class OpenAIService {
     private String apiKey;
 
     private final ProblemService problemService;
-//    private static final String OPENAI_API_KEY = getApiKey();
+    private final TagService tagService;
 
 //    public static void main(String[] args) {
 ////        List<Problem> problems = getProblems();   // TEST
@@ -35,45 +37,6 @@ public class OpenAIService {
 //        List<Integer> levelTestProblemIds = createLevelTest("language", "");  // TEST
 //    }
 
-    /* config.properties에서 OpenAI API key 조회 함수 */
-//    public static String getApiKey() {
-//        try (InputStream in = OpenAIService.class.getClassLoader().getResourceAsStream("config.properties")) {
-//            Properties props = new Properties();
-//            props.load(in);
-//            return props.getProperty("openai.api.key");
-//        } catch (Exception e) {
-//            throw new RuntimeException("API 키 로딩 실패", e);
-//        }
-//    }
-
-//    /* 전체 문제 목록 조회 함수 */
-//    public List<ProblemResponseDto> getProblems() {
-//
-//        OkHttpClient client = new OkHttpClient();
-//
-//        Request request = new Request.Builder()
-//                .url("http://3.35.192.94:8080/api/v1/problems")
-//                .addHeader("Authorization", "Bearer fixed-test-token")
-//                .build();
-//
-//        try (Response response = client.newCall(request).execute()) {
-//            if (!response.isSuccessful()) {
-//                System.err.println("응답 실패: " + response.code());
-//                return emptyList();
-//            }
-//
-//            String responseBody = response.body().string();
-//
-//            // JSON 파싱
-//            Gson gson = new Gson();
-//            Type listType = new TypeToken<List<ProblemResponseDto>>() {}.getType();
-//            List<ProblemResponseDto> problemList = gson.fromJson(responseBody, listType);
-//
-//            return problemList;
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
     /* AI 응답 생성 함수 */
     public String createAIResponse(String rule, String prompt) {
@@ -143,6 +106,9 @@ public class OpenAIService {
 
         // 학습 유형이 알고리즘이면 해당하는 문제 목록을 후보로 저장
         if (type == RoadmapType.Algorithm) {
+            if (!tagService.getAllTagNames().contains(category)) {
+                throw new CustomException(ErrorCode.PROBLEM_TAG_NOT_FOUND);
+            }
             problems = filterByTag(problems, category);
         }
 
@@ -198,7 +164,6 @@ public class OpenAIService {
                 }
             }
         }
-//        System.out.println("problemIds: " + problemIds);  // TEST
 
         // 선택한 문제 아이디 리스트 리턴
         return problemIds;
@@ -218,6 +183,9 @@ public class OpenAIService {
 
         // 학습 유형이 알고리즘이면 해당하는 문제 목록을 후보로 저장
         if (type == RoadmapType.Algorithm) {
+            if (!tagService.getAllTagNames().contains(category)) {
+                throw new CustomException(ErrorCode.PROBLEM_TAG_NOT_FOUND);
+            }
             problems = filterByTag(problems, category);
         }
 
@@ -229,7 +197,7 @@ public class OpenAIService {
 
         // 특정 난이도의 후보 문제 중 랜덤으로 결정하여 문제 아이디 저장
         for (int targetRating : problemRatings) {
-            // 후보 난이도에 해당한느 문제 목록을 후보로 저장
+            // 후보 난이도에 해당하는 문제 목록을 후보로 저장
             List<ProblemResponseDto> targetProblems = filterByRating(problems, targetRating);
 
             // 후보 문제의 아이디와 태그를 텍스트화
@@ -257,7 +225,7 @@ public class OpenAIService {
                 }
             }
         }
-        System.out.println("problemIds: " + problemIds);  // TEST
+        // System.out.println("problemIds: " + problemIds);  // TEST
 
         // 선택한 문제 아이디 리스트 리턴
         return problemIds;
