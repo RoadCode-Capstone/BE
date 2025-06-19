@@ -18,9 +18,9 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("API 문서 제목")
+                        .title("ROADCODE API")
                         .version("v1")
-                        .description("API 설명"))
+                        .description(""))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,

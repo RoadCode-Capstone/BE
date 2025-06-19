@@ -4,6 +4,7 @@ import com.capstone2025.roadcode.dto.ProblemResponseDto;
 import com.capstone2025.roadcode.entity.RoadmapType;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -20,9 +21,12 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 
 @Service
+@RequiredArgsConstructor
 public class OpenAIService {
     @Value("${openai.api.key}")
     private String apiKey;
+
+    private final ProblemService problemService;
 //    private static final String OPENAI_API_KEY = getApiKey();
 
 //    public static void main(String[] args) {
@@ -42,33 +46,34 @@ public class OpenAIService {
 //        }
 //    }
 
-    /* 전체 문제 목록 조회 함수 */
-    public List<ProblemResponseDto> getProblems() {
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url("http://3.35.192.94:8080/api/v1/problems")
-                .addHeader("Authorization", "Bearer fixed-test-token")
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                System.err.println("응답 실패: " + response.code());
-                return emptyList();
-            }
-
-            String responseBody = response.body().string();
-
-            // JSON 파싱
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<ProblemResponseDto>>() {}.getType();
-            List<ProblemResponseDto> problemList = gson.fromJson(responseBody, listType);
-
-            return problemList;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    /* 전체 문제 목록 조회 함수 */
+//    public List<ProblemResponseDto> getProblems() {
+//
+//        OkHttpClient client = new OkHttpClient();
+//
+//        Request request = new Request.Builder()
+//                .url("http://3.35.192.94:8080/api/v1/problems")
+//                .addHeader("Authorization", "Bearer fixed-test-token")
+//                .build();
+//
+//        try (Response response = client.newCall(request).execute()) {
+//            if (!response.isSuccessful()) {
+//                System.err.println("응답 실패: " + response.code());
+//                return emptyList();
+//            }
+//
+//            String responseBody = response.body().string();
+//
+//            // JSON 파싱
+//            Gson gson = new Gson();
+//            Type listType = new TypeToken<List<ProblemResponseDto>>() {}.getType();
+//            List<ProblemResponseDto> problemList = gson.fromJson(responseBody, listType);
+//
+//            return problemList;
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     /* AI 응답 생성 함수 */
     public String createAIResponse(String rule, String prompt) {
@@ -134,7 +139,7 @@ public class OpenAIService {
          */
 
         // 전체 문제 목록을 후보로 저장
-        List<ProblemResponseDto> problems = getProblems();
+        List<ProblemResponseDto> problems = problemService.getAllProblemsWithTags();
 
         // 학습 유형이 알고리즘이면 해당하는 문제 목록을 후보로 저장
         if (type == RoadmapType.Algorithm) {
@@ -209,7 +214,7 @@ public class OpenAIService {
          */
 
         // 전체 문제 목록을 후보로 저장
-        List<ProblemResponseDto> problems = getProblems();
+        List<ProblemResponseDto> problems = problemService.getAllProblemsWithTags();
 
         // 학습 유형이 알고리즘이면 해당하는 문제 목록을 후보로 저장
         if (type == RoadmapType.Algorithm) {

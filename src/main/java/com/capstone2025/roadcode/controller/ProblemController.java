@@ -26,7 +26,7 @@ public class ProblemController {
 
     // 문제 목록 전체 조회
     @GetMapping
-    public ResponseEntity<List<ProblemResponseDto>> getProblems(
+    public ApiResponse<List<ProblemResponseDto>> getProblems(
             @RequestParam(required = false) List<Long> ids
     ) {
         List<ProblemResponseDto> response;
@@ -37,6 +37,6 @@ public class ProblemController {
             response = problemService.getAllProblemsWithTags();
         }
 
-        return ResponseEntity.ok(response);
+        return ApiResponse.success(response);
     }
 }
