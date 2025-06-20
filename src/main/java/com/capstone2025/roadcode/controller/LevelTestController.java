@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1//level-test")
+@RequestMapping("/api/v1/level-test")
 public class LevelTestController {
 
     private final OpenAIService openAiService;
