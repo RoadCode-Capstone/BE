@@ -55,7 +55,7 @@ public class RoadmapController {
         String email = authentication.getName();
         roadmapService.deleteRoadmap(roadmapId, email);
 
-        return ApiResponse.successWithMessage("로드맵이 생성되었습니다.");
+        return ApiResponse.successWithMessage("로드맵이 삭제되었습니다.");
     }
 
 
