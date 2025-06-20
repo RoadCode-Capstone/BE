@@ -49,6 +49,14 @@ public class RoadmapController {
         return ApiResponse.success(problems);
     }
 
+    // 로드맵 삭제 (테스트/시연)
+    @DeleteMapping("/{roadmapId}")
+    public ApiResponse<String> deleteRoadmap(@PathVariable Long roadmapId, Authentication authentication) {
+        String email = authentication.getName();
+        roadmapService.deleteRoadmap(roadmapId, email);
+
+        return ApiResponse.successWithMessage("로드맵이 생성되었습니다.");
+    }
 
 
 }

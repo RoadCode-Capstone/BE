@@ -114,4 +114,18 @@ public class RoadmapService {
 
         return roadmaps;
     }
+
+    @Transactional
+    public void deleteRoadmap(Long roadmapId, String email) {
+        Member member = memberService.findByEmail(email);
+
+        Roadmap roadmap = roadmapRepository.findById(roadmapId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.ROADMAP_NOT_FOUND));
+
+        if (roadmap.getMember() != member){
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        roadmapRepository.delete(roadmap);
+    }
 }
