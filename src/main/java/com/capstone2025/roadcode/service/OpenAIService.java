@@ -168,6 +168,8 @@ public class OpenAIService {
             }
         }
 
+        problemIds.add(0, 2195l); // Hello World 문제 추가(시연 후 해당 코드 삭제)
+
         // 선택한 문제 아이디 리스트 리턴
         return problemIds;
     }

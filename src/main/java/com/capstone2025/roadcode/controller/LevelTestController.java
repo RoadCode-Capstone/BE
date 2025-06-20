@@ -14,8 +14,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/ai")
-public class AIController {
+@RequestMapping("/api/v1//level-test")
+public class LevelTestController {
 
     private final OpenAIService openAiService;
 
@@ -30,7 +30,7 @@ public class AIController {
 //        return ApiResponse.success(result);
 //    }
 
-    @PostMapping("/level-test")
+    @PostMapping()
     public ApiResponse<List<Integer>> generateLevelTest(@RequestBody LevelTestRequest request) {
         List<Integer> result = openAiService.createLevelTest(
                 RoadmapType.fromString(request.getType()),
