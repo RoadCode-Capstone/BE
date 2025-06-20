@@ -13,6 +13,7 @@ import com.capstone2025.roadcode.repository.ProblemRepository;
 import com.capstone2025.roadcode.repository.SubmissionRepository;
 import com.capstone2025.roadcode.repository.TestcaseRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SubmissionService {
 
     private final TestcaseRepository testcaseRepository;
@@ -114,19 +116,24 @@ public class SubmissionService {
 
     // 도커 명령어 생성
     private ProcessBuilder buildDockerCommand(DockerExecutionContext ctx) {
-        ProcessBuilder pb = new ProcessBuilder(
+        List<String> command = Arrays.asList(
                 "docker", "run", "--rm", "-i",
                 "-v", ctx.getCodeDir() + ":/app",
                 "-w", "/app", ctx.getLanguageType().getImage(),
                 "sh", "-c", ctx.getLanguageType().getCommand()
         );
 
-        return pb;
+        log.info("[Docker command] : \n" + String.join(" ", command));
+        return new ProcessBuilder(command);
     }
 
     // 테스트케이스 실행 코드
     private TestcaseResult executeWithInput(ProcessBuilder pb, String input, String expectedOutput) {
         try {
+            log.info("[프로세스 시작]");
+            log.info("입력값:\n" + input);
+            log.info("기대 출력값:\n" + expectedOutput);
+
             Process process = pb.start();
 
             try(
@@ -147,6 +154,7 @@ public class SubmissionService {
                     outputBuilder.append(line).append("\n");
                 }
                 String actualOutput = outputBuilder.toString().trim();
+                log.info("실제 출력값:\n" + actualOutput);
 
                 // 표준 에러 읽기
                 StringBuilder stderrBuilder = new StringBuilder();
@@ -160,9 +168,14 @@ public class SubmissionService {
                 boolean passed = expectedOutput.trim().equals(actualOutput != null ? actualOutput.trim() : "");
 
                 if (passed) {
+                    log.info("테스트 통과");
                     return new TestcaseResult(true, null);
                 } else {
+                    log.info("테스트 실패");
+
                     String errorMsg = stderrBuilder.toString().trim();
+                    log.info("표준 에러 출력:\n" + errorMsg);
+
                     if (!errorMsg.isEmpty()) {
                         return new TestcaseResult(false, errorMsg);
                     } else {
@@ -172,6 +185,7 @@ public class SubmissionService {
             }
 
         } catch (Exception e) {
+            log.info("예외 발생: " + e.getMessage());
             return new TestcaseResult(false, "예외 발생: " + e.getMessage());
         }
     }

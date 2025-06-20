@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
-    @Query("SELECT t.name FROM Tag t")
+    //@Query("SELECT t.name FROM Tag t")
+    @Query(value = "SELECT name FROM tag ORDER BY CONVERT(name USING utf8mb4) COLLATE utf8mb4_unicode_ci", nativeQuery = true)
     List<String> findAllTagNames();
 }
