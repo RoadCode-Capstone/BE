@@ -109,7 +109,7 @@ public class RoadmapService {
     public List<RoadmapResponse> getRoadmaps(String email) {
         Member member = memberService.findByEmail(email);
         List<RoadmapResponse> roadmaps = roadmapRepository.findByMember(member).stream()
-                .map(rm -> new RoadmapResponse(rm.getId(), rm.getTitle(), rm.getType(), rm.getCategory()))
+                .map(rm -> new RoadmapResponse(rm.getId(), rm.getTitle(), rm.getType(), rm.getCategory(), rm.getStatus()))
                 .collect(Collectors.toList());
 
         return roadmaps;

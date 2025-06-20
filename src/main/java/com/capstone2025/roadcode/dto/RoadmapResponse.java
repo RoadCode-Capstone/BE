@@ -1,5 +1,6 @@
 package com.capstone2025.roadcode.dto;
 
+import com.capstone2025.roadcode.entity.RoadmapStatus;
 import com.capstone2025.roadcode.entity.RoadmapType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,4 +14,5 @@ public class RoadmapResponse {
     private String title;
     private RoadmapType type;
     private String category;
+    private RoadmapStatus status;
 }
