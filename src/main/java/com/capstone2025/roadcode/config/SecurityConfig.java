@@ -48,7 +48,8 @@ public class SecurityConfig {
                                 "/api/v1/tags/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/test/**")
+                                "/test/**",
+                                "/h2-console/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex

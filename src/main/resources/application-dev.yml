@@ -1,0 +1,55 @@
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
+
+spring:
+  custom:
+    auth:
+      allow-fixed-token: true
+
+  datasource:
+    url: jdbc:mysql://db-roadcode.ctw84yo0m2vd.ap-northeast-2.rds.amazonaws.com:3306/roadcode
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: roadcode
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+      dialect: org.hibernate.dialect.MYSQLDialect
+
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: hiii717@naver.com
+    password: roadcode
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            trust: smtp.naver.com
+          starttls:
+            enable: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  code:
+    save-dir : /tmp/code-files
+    save-file: "Solution"
+
+  logging:
+    level:
+      org:
+        springframework: DEBUG
+      com:
+        zaxxer:
+          hikari:
+            DEBUG
