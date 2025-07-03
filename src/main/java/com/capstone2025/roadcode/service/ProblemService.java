@@ -1,7 +1,7 @@
 package com.capstone2025.roadcode.service;
 
 import com.capstone2025.roadcode.dto.ProblemInfoResponse;
-import com.capstone2025.roadcode.dto.ProblemResponseDto;
+import com.capstone2025.roadcode.dto.ProblemResponse;
 import com.capstone2025.roadcode.entity.Problem;
 import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
@@ -25,11 +25,11 @@ public class ProblemService {
     }
 
     // 문제 목록 전체 조회
-    public List<ProblemResponseDto> getAllProblemsWithTags() {
+    public List<ProblemResponse> getAllProblemsWithTags() {
         List<Problem> problems = problemRepository.findAllWithTags();
 
         return problems.stream()
-                .map(problem -> new ProblemResponseDto(
+                .map(problem -> new ProblemResponse(
                         problem.getId(),
                         problem.getContestId(),
                         problem.getIndex(),
@@ -49,11 +49,11 @@ public class ProblemService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProblemResponseDto> getProblemsByIdsWithTags(List<Long> ids) {
+    public List<ProblemResponse> getProblemsByIdsWithTags(List<Long> ids) {
         List<Problem> problems = problemRepository.findAllByIdInWithTags(ids);
 
         return problems.stream()
-                .map(problem -> new ProblemResponseDto(
+                .map(problem -> new ProblemResponse(
                         problem.getId(),
                         problem.getContestId(),
                         problem.getIndex(),

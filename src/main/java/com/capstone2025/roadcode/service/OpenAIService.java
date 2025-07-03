@@ -1,12 +1,11 @@
 package com.capstone2025.roadcode.service;
 
 import com.capstone2025.roadcode.common.LanguageType;
-import com.capstone2025.roadcode.dto.ProblemResponseDto;
+import com.capstone2025.roadcode.dto.ProblemResponse;
 import com.capstone2025.roadcode.entity.RoadmapType;
 import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import com.google.gson.JsonArray;
@@ -15,13 +14,9 @@ import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Type;
+
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Collections.emptyList;
 
 @Service
 @RequiredArgsConstructor
@@ -93,7 +88,7 @@ public class OpenAIService {
     }
 
     /* 학습 로드맵 생성 함수(학습 유형, 알고리즘, 일일 학습 목표, 레벨테스트 결과) */
-    public List<Long> createRoadmap(RoadmapType type, String category, int dailyGoal, int levelTestResult) {
+    public List<Long> createRoadmap(RoadmapType type, String algorithm, int dailyGoal, int levelTestResult) {
         /*
         레벨 테스트 결과를 기준으로 -100 ~ +500
         총 문제 수 : 일일 학습 목표 * 14 (2주)
@@ -103,16 +98,16 @@ public class OpenAIService {
          */
 
         // 전체 문제 목록을 후보로 저장
-        List<ProblemResponseDto> problems = problemService.getAllProblemsWithTags();
+        List<ProblemResponse> problems = problemService.getAllProblemsWithTags();
 
         // 학습 유형이 알고리즘이면 해당하는 문제 목록을 후보로 저장
         if (type == RoadmapType.Algorithm) {
-            if (!tagService.getAllTagNames().contains(category)) {
+            if (!tagService.containsTag(algorithm)) {
                 throw new CustomException(ErrorCode.PROBLEM_TAG_NOT_FOUND);
             }
-            problems = filterByTag(problems, category);
+            problems = filterByTag(problems, algorithm);
         } else if(type == RoadmapType.Language) {
-            LanguageType.fromString(category);
+            LanguageType.fromString(algorithm);
         }
 
         // 난이도별 개수 저장
@@ -139,12 +134,12 @@ public class OpenAIService {
             int targetRating = levelTestResult + diff;  // 후보 난이도
 
             // 후보 난이도에 해당하는 문제 목록을 후보로 저장
-            List<ProblemResponseDto> targetProblems = filterByRating(problems, targetRating);
+            List<ProblemResponse> targetProblems = filterByRating(problems, targetRating);
 
             // id, tags만 보내면 약 10원. description도 같이 보내면 약 200원. (2000문제 기준)
             // 후보 문제의 아이디와 태그를 텍스트화
             StringBuilder stringBuilder = new StringBuilder();
-            for (ProblemResponseDto problem : targetProblems) {
+            for (ProblemResponse problem : targetProblems) {
                 stringBuilder.append(problem.getId())
                         .append(", ")
                         .append(new Gson().toJson(problem.getTags()))
@@ -175,7 +170,7 @@ public class OpenAIService {
     }
 
     /* 레벨테스트 생성 함수(학습 유형, 알고리즘) */
-    public List<Integer> createLevelTest(RoadmapType type, String category) {
+    public List<Integer> createLevelTest(RoadmapType type, String algorithm) {
         /*
         총 문제 수 : 5
         각 문제 난이도 : 800, 1000, 1300, 1500, 1800
@@ -184,16 +179,16 @@ public class OpenAIService {
          */
 
         // 전체 문제 목록을 후보로 저장
-        List<ProblemResponseDto> problems = problemService.getAllProblemsWithTags();
+        List<ProblemResponse> problems = problemService.getAllProblemsWithTags();
 
         // 학습 유형이 알고리즘이면 해당하는 문제 목록을 후보로 저장
         if (type == RoadmapType.Algorithm) {
-            if (!tagService.getAllTagNames().contains(category)) {
+            if (!tagService.containsTag(algorithm)) {
                 throw new CustomException(ErrorCode.PROBLEM_TAG_NOT_FOUND);
             }
-            problems = filterByTag(problems, category);
+            problems = filterByTag(problems, algorithm);
         } else if(type == RoadmapType.Language) {
-            LanguageType.fromString(category);
+            LanguageType.fromString(algorithm);
         }
 
         // 각 문제 난이도 저장
@@ -205,11 +200,11 @@ public class OpenAIService {
         // 특정 난이도의 후보 문제 중 랜덤으로 결정하여 문제 아이디 저장
         for (int targetRating : problemRatings) {
             // 후보 난이도에 해당하는 문제 목록을 후보로 저장
-            List<ProblemResponseDto> targetProblems = filterByRating(problems, targetRating);
+            List<ProblemResponse> targetProblems = filterByRating(problems, targetRating);
 
             // 후보 문제의 아이디와 태그를 텍스트화
             StringBuilder stringBuilder = new StringBuilder();
-            for (ProblemResponseDto problem : targetProblems) {
+            for (ProblemResponse problem : targetProblems) {
                 stringBuilder.append(problem.getId())
                         .append(", ")
                         .append(new Gson().toJson(problem.getTags()))
@@ -239,14 +234,14 @@ public class OpenAIService {
     }
 
     /* 특정 태그를 가지는 문제 목록 조회 함수 */
-    public List<ProblemResponseDto> filterByTag(List<ProblemResponseDto> problems, String targetTag) {
+    public List<ProblemResponse> filterByTag(List<ProblemResponse> problems, String targetTag) {
         return problems.stream()
                 .filter(p -> p.getTags() != null && p.getTags().contains(targetTag))
                 .collect(Collectors.toList());
     }
 
     /* 특정 난이도를 가지는 문제 목록 조회 함수 */
-    public List<ProblemResponseDto> filterByRating(List<ProblemResponseDto> problems, int targetRating) {
+    public List<ProblemResponse> filterByRating(List<ProblemResponse> problems, int targetRating) {
         return problems.stream()
                 .filter(p -> p.getRating() == targetRating)
                 .collect(Collectors.toList());

@@ -1,6 +1,7 @@
 package com.capstone2025.roadcode.controller;
 
 import com.capstone2025.roadcode.common.ApiResponse;
+import com.capstone2025.roadcode.dto.AllTagsResponse;
 import com.capstone2025.roadcode.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,7 @@ public class TagController {
     private final TagService tagService;
 
     @GetMapping()
-    public ApiResponse<List<String>> getAllTags() {
+    public ApiResponse<AllTagsResponse> getAllTags() {
         return ApiResponse.success(tagService.getAllTagNames());
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class ProblemResponseDto {
+public class ProblemResponse {
     private Long id;
     private Integer contestId;
     private String index;
