@@ -1,6 +1,5 @@
 package com.capstone2025.roadcode.service;
 
-import com.capstone2025.roadcode.common.LanguageType;
 import com.capstone2025.roadcode.dto.ProblemResponse;
 import com.capstone2025.roadcode.entity.RoadmapType;
 import com.capstone2025.roadcode.exception.CustomException;
@@ -106,8 +105,6 @@ public class OpenAIService {
                 throw new CustomException(ErrorCode.PROBLEM_TAG_NOT_FOUND);
             }
             problems = filterByTag(problems, algorithm);
-        } else if(type == RoadmapType.Language) {
-            LanguageType.fromString(algorithm);
         }
 
         // 난이도별 개수 저장
@@ -187,8 +184,6 @@ public class OpenAIService {
                 throw new CustomException(ErrorCode.PROBLEM_TAG_NOT_FOUND);
             }
             problems = filterByTag(problems, algorithm);
-        } else if(type == RoadmapType.Language) {
-            LanguageType.fromString(algorithm);
         }
 
         // 각 문제 난이도 저장

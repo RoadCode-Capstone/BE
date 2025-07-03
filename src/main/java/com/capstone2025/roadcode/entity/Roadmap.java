@@ -1,6 +1,7 @@
 package com.capstone2025.roadcode.entity;
 
 import com.capstone2025.roadcode.common.BaseEntity;
+import com.capstone2025.roadcode.common.LanguageType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +29,7 @@ public class Roadmap extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RoadmapType type;
 
-    private String language;
+    private LanguageType language;
 
     private String algorithm;
 
@@ -47,7 +48,7 @@ public class Roadmap extends BaseEntity {
                 .member(member)
                 .title(title)
                 .type(type)
-                .language(language)
+                .language(LanguageType.fromString(language))
                 .algorithm(algorithm)
                 .status(RoadmapStatus.IN_PROGRESS)
                 .build();

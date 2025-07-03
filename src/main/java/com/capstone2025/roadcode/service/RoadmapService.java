@@ -40,7 +40,7 @@ public class RoadmapService {
                 roadmapProblem.getId(), roadmapProblem.getProblem().getId(), roadmapProblem.getSequence(), roadmapProblem.getStatus());
 
         return new RoadmapInfoResponse(
-                roadmap.getId(), roadmap.getTitle(), roadmap.getType(), roadmap.getLanguage(), roadmap.getAlgorithm(), currentProblem);
+                roadmap.getId(), roadmap.getTitle(), roadmap.getType(), roadmap.getLanguage().toString(), roadmap.getAlgorithm(), currentProblem);
     }
 
     // 로드맵 문제 목록 조회
@@ -64,7 +64,7 @@ public class RoadmapService {
     public void createRoadmap(RoadmapRequest request, String email) {
 
         RoadmapType type =  RoadmapType.fromString(request.getType());
-        String language = request.getLanguage();
+        String language = request.getLanguage().toString();
         String algorithm = request.getAlgorithm();
 
         List<Long> problemIds = aiService.createRoadmap(
@@ -111,7 +111,7 @@ public class RoadmapService {
     public List<RoadmapResponse> getRoadmaps(String email) {
         Member member = memberService.findByEmail(email);
         List<RoadmapResponse> roadmaps = roadmapRepository.findByMember(member).stream()
-                .map(rm -> new RoadmapResponse(rm.getId(), rm.getTitle(), rm.getType(), rm.getLanguage(), rm.getAlgorithm(), rm.getStatus()))
+                .map(rm -> new RoadmapResponse(rm.getId(), rm.getTitle(), rm.getType(), rm.getLanguage().toString(), rm.getAlgorithm(), rm.getStatus()))
                 .collect(Collectors.toList());
 
         return roadmaps;
