@@ -105,7 +105,9 @@ public class RoadmapService {
     }
 
     private String createRoadmapName(RoadmapType type, String language, String algorithm){
-        return type.toString() + " " + language + algorithm + " 로드맵";
+        return type.toString()
+                + (algorithm != null ? " " + algorithm : "")
+                + " " + language + " 로드맵";
     }
 
     public List<RoadmapResponse> getRoadmaps(String email) {
