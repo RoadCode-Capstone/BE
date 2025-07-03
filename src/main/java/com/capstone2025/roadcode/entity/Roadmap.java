@@ -29,6 +29,7 @@ public class Roadmap extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RoadmapType type;
 
+    @Enumerated(EnumType.STRING)
     private LanguageType language;
 
     private String algorithm;
