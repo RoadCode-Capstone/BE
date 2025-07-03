@@ -13,6 +13,7 @@ public class RoadmapResponse {
     private Long roadmapId;
     private String title;
     private RoadmapType type;
-    private String category;
+    private String language;
+    private String algorithm;
     private RoadmapStatus status;
 }

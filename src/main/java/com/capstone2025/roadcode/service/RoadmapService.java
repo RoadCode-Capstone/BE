@@ -40,7 +40,7 @@ public class RoadmapService {
                 roadmapProblem.getId(), roadmapProblem.getProblem().getId(), roadmapProblem.getSequence(), roadmapProblem.getStatus());
 
         return new RoadmapInfoResponse(
-                roadmap.getId(), roadmap.getTitle(), roadmap.getType(), roadmap.getCategory(), currentProblem);
+                roadmap.getId(), roadmap.getTitle(), roadmap.getType(), roadmap.getLanguage(), roadmap.getAlgorithm(), currentProblem);
     }
 
     // 로드맵 문제 목록 조회
@@ -64,11 +64,12 @@ public class RoadmapService {
     public void createRoadmap(RoadmapRequest request, String email) {
 
         RoadmapType type =  RoadmapType.fromString(request.getType());
-        String category = request.getCategory();
+        String language = request.getLanguage();
+        String algorithm = request.getAlgorithm();
 
         List<Long> problemIds = aiService.createRoadmap(
                 type,
-                category,
+                algorithm,
                 request.getDailyGoal(),
                 request.getLevelTestResult()
         );
@@ -82,8 +83,9 @@ public class RoadmapService {
 
         Member member = memberService.findByEmail(email);
 
+        String roadmapName = createRoadmapName(type, language, algorithm);
         Roadmap roadmap = Roadmap.create(
-                member, createRoadmapName(type, category), type, category);
+                member, roadmapName, type, language, algorithm);
 
 
         roadmapRepository.save(roadmap);
@@ -102,14 +104,14 @@ public class RoadmapService {
         }
     }
 
-    private String createRoadmapName(RoadmapType type, String category){
-        return type.toString() + " " + category + " 로드맵";
+    private String createRoadmapName(RoadmapType type, String language, String algorithm){
+        return type.toString() + " " + language + algorithm + " 로드맵";
     }
 
     public List<RoadmapResponse> getRoadmaps(String email) {
         Member member = memberService.findByEmail(email);
         List<RoadmapResponse> roadmaps = roadmapRepository.findByMember(member).stream()
-                .map(rm -> new RoadmapResponse(rm.getId(), rm.getTitle(), rm.getType(), rm.getCategory(), rm.getStatus()))
+                .map(rm -> new RoadmapResponse(rm.getId(), rm.getTitle(), rm.getType(), rm.getLanguage(), rm.getAlgorithm(), rm.getStatus()))
                 .collect(Collectors.toList());
 
         return roadmaps;

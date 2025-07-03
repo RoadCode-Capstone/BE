@@ -28,7 +28,9 @@ public class Roadmap extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RoadmapType type;
 
-    private String category; // 언어의 경우 java/c/pytoh, 알고리즘의 경우 bfs 등
+    private String language;
+
+    private String algorithm;
 
     @Enumerated(EnumType.STRING)
     private RoadmapStatus status;
@@ -40,12 +42,13 @@ public class Roadmap extends BaseEntity {
     @OneToMany(mappedBy = "roadmap") // order 기준으로 오름차순 정렬(수정 필요)
     private List<RoadmapProblem> roadmapProblems = new ArrayList<>();
 
-    public static Roadmap create(Member member, String title, RoadmapType type, String category) {
+    public static Roadmap create(Member member, String title, RoadmapType type, String language, String algorithm) {
         return Roadmap.builder()
                 .member(member)
                 .title(title)
                 .type(type)
-                .category(category)
+                .language(language)
+                .algorithm(algorithm)
                 .status(RoadmapStatus.IN_PROGRESS)
                 .build();
     }
