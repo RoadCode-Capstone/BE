@@ -27,6 +27,7 @@ spring:
           auth: true
           ssl:
             enable: true
+      mail.debug: true
 
   data:
     redis:

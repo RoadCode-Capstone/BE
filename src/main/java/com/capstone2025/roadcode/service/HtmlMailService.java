@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +26,12 @@ public class HtmlMailService implements MailService {
 
     public void sendCode(String toEmail, String code) {
         try {
-            log.info("HtmlMailService 진입", code);
-            log.info("📧 메일 발신자 username: {}", mailUsername);
+            JavaMailSenderImpl impl = (JavaMailSenderImpl) mailSender;
+            log.info("Host: {}", impl.getHost());
+            log.info("Port: {}", impl.getPort());
+            log.info("Username: {}", impl.getUsername());
+            log.info("Password: {}", impl.getPassword()); // 프로덕션에선 주의!
+
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
 
@@ -41,6 +46,7 @@ public class HtmlMailService implements MailService {
             log.info("send message 됨");
 
         } catch (MessagingException e) {
+            log.error("메일 전송 실패", e);
             throw new CustomException(ErrorCode.MAIL_SEND_FAILED);
         }
     }
