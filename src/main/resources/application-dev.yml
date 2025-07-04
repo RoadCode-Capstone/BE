@@ -24,15 +24,16 @@ spring:
 
   mail:
     host: smtp.naver.com
-    port: 587
+    port: 465
     username: hiii717@naver.com
     password: F6TPUZFNB296
     properties:
       mail:
         smtp:
           auth: true
-          starttls:
+          ssl:
             enable: true
+            trust: smtp.naver.com
   data:
     redis:
       host: localhost
