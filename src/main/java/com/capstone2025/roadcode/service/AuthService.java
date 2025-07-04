@@ -6,11 +6,13 @@ import com.capstone2025.roadcode.entity.Member;
 import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     
     private final MemberService memberService;
@@ -80,6 +82,7 @@ public class AuthService {
 
         // 인증 코드 생성/저장
         String code = verificationService.generateAndSaveCode(email);
+        log.info("인증 코드: ", code);
 
         // 인증 코드 메일로 전송
         mailService.sendCode(email, code);

@@ -19,11 +19,12 @@ public class HtmlMailService implements MailService {
 
     private final JavaMailSender mailSender;
     public void sendCode(String toEmail, String code) {
+        log.info("HtmlMailService 진입", code);
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
 
-//            helper.setFrom("pak2680@naver.com");
+            helper.setFrom("hiii717@naver.com");
             helper.setTo(toEmail);
             helper.setSubject("회원가입 인증 코드");
             helper.setText("인증 코드: " + code + "\n5분 안에 입력해 주세요.");
