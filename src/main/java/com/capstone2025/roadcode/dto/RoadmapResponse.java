@@ -1,5 +1,6 @@
 package com.capstone2025.roadcode.dto;
 
+import com.capstone2025.roadcode.common.LanguageType;
 import com.capstone2025.roadcode.entity.RoadmapStatus;
 import com.capstone2025.roadcode.entity.RoadmapType;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ public class RoadmapResponse {
     private Long roadmapId;
     private String title;
     private RoadmapType type;
-    private String language;
+    private LanguageType language;
     private String algorithm;
     private RoadmapStatus status;
 }
