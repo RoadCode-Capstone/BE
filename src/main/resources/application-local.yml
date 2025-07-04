@@ -39,3 +39,9 @@ spring:
   code:
     save-dir : C:/tmp/code-files
     save-file: "Solution"
+
+  logging:
+    level:
+      org.springframework: INFO
+      org.springframework.mail: DEBUG
+      com.zaxxer.hikari: DEBUG

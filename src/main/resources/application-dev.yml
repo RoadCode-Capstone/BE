@@ -23,9 +23,8 @@ spring:
     port: 465
     properties:
       mail.smtp.auth: true
-      mail.smtp.ssl.enable: true
       mail.smtp.starttls.enable: true
-      mail.smtp.ssl.trust: smtp.naver.com
+      mail.smtp.starttls.required: true
 
   data:
     redis:
@@ -38,7 +37,7 @@ spring:
 
   logging:
     level:
-      org.springframework: DEBUG
-      org.springframeword.mail: DEBUG
+      org.springframework: INFO
+      org.springframework.mail: DEBUG
       com.zaxxer.hikari: DEBUG
 
