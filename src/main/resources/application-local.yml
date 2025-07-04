@@ -1,9 +1,3 @@
-# application-local.yml
-
-openai:
-  api:
-    key: ${OPENAI_API_KEY}
-
 spring:
   custom:
     auth:
@@ -29,19 +23,13 @@ spring:
       path: /h2-console
 
   mail:
-    host: smtp.test.com
+    host: smtp.naver.com
     port: 465
-    username: test@mail.com
-    password: 1234
     properties:
-      mail:
-        smtp:
-          auth: true
-          ssl:
-            enable: true
-            trust: smtp.test.com
-          starttls:
-            enable: true
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.trust: smtp.naver.com
 
   data:
     redis:

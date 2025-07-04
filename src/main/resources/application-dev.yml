@@ -1,7 +1,3 @@
-openai:
-  api:
-    key: ${OPENAI_API_KEY}
-
 spring:
   custom:
     auth:
@@ -25,15 +21,12 @@ spring:
   mail:
     host: smtp.naver.com
     port: 465
-    username: hiii717@naver.com
-    password: F6TPUZFNB296
     properties:
-      mail:
-        smtp:
-          auth: true
-          ssl:
-            enable: true
-            trust: smtp.naver.com
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.trust: smtp.naver.com
+
   data:
     redis:
       host: localhost

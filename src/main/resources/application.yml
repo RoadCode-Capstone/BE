@@ -1,5 +1,4 @@
 spring:
   profiles:
     active: local
-  config:
-    import: application-local.yml
+    include: secret
