@@ -31,8 +31,6 @@ spring:
       mail:
         smtp:
           auth: true
-          ssl:
-            enable: true
             trust: smtp.naver.com
           starttls:
             enable: true
