@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Profile("local")
+@Profile("!local")
 @Slf4j
 public class HtmlMailService implements MailService {
 
