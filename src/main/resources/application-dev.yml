@@ -24,7 +24,7 @@ spring:
 
   mail:
     host: smtp.naver.com
-    port: 465
+    port: 587
     username: hiii717@naver.com
     password: F6TPUZFNB296
     properties:
@@ -47,9 +47,7 @@ spring:
 
   logging:
     level:
-      org:
-        springframework: DEBUG
-      com:
-        zaxxer:
-          hikari:
-            DEBUG
+      org.springframework: DEBUG
+      org.springframeword.mail: DEBUG
+      com.zaxxer.hikari: DEBUG
+
