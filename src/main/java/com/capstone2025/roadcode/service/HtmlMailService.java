@@ -19,8 +19,8 @@ public class HtmlMailService implements MailService {
 
     private final JavaMailSender mailSender;
     public void sendCode(String toEmail, String code) {
-        log.info("HtmlMailService 진입", code);
         try {
+            log.info("HtmlMailService 진입", code);
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
 
@@ -29,7 +29,10 @@ public class HtmlMailService implements MailService {
             helper.setSubject("회원가입 인증 코드");
             helper.setText("인증 코드: " + code + "\n5분 안에 입력해 주세요.");
 
+            log.info("메일 안 인증 코드: {}", code);
+
             mailSender.send(message);
+            log.info("send message 됨");
 
         } catch (MessagingException e) {
             throw new CustomException(ErrorCode.MAIL_SEND_FAILED);

@@ -82,10 +82,11 @@ public class AuthService {
 
         // 인증 코드 생성/저장
         String code = verificationService.generateAndSaveCode(email);
-        log.info("인증 코드: ", code);
+        log.info("인증 코드: {}", code);
 
         // 인증 코드 메일로 전송
         mailService.sendCode(email, code);
+        log.info("인증코드 메일로 전송 완.");
     }
 
     // 비밀번호 재설정용 이메일 인증 요청
