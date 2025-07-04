@@ -22,9 +22,11 @@ spring:
     host: smtp.naver.com
     port: 465
     properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
-      mail.smtp.starttls.required: true
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
 
   data:
     redis:
