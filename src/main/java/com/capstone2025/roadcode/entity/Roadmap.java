@@ -11,8 +11,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Roadmap extends BaseEntity {
 
     @Id
@@ -44,12 +42,21 @@ public class Roadmap extends BaseEntity {
     @OneToMany(mappedBy = "roadmap") // order 기준으로 오름차순 정렬(수정 필요)
     private List<RoadmapProblem> roadmapProblems = new ArrayList<>();
 
-    public static Roadmap create(Member member, String title, RoadmapType type, String language, String algorithm) {
+    @Builder
+    private Roadmap(Member member, String title, RoadmapType type, LanguageType language, String algorithm, RoadmapStatus status) {
+        this.member = member;
+        this.title = title;
+        this.type = type;
+        this.language = language;
+        this.algorithm = algorithm;
+        this.status = status;
+    }
+    public static Roadmap create(Member member, String title, RoadmapType type, LanguageType language, String algorithm) {
         return Roadmap.builder()
                 .member(member)
                 .title(title)
                 .type(type)
-                .language(LanguageType.fromString(language))
+                .language(language)
                 .algorithm(algorithm)
                 .status(RoadmapStatus.IN_PROGRESS)
                 .build();

@@ -1,5 +1,6 @@
 package com.capstone2025.roadcode.service;
 
+import com.capstone2025.roadcode.common.LanguageType;
 import com.capstone2025.roadcode.dto.RoadmapInfoResponse;
 import com.capstone2025.roadcode.dto.RoadmapProblemResponse;
 import com.capstone2025.roadcode.dto.RoadmapRequest;
@@ -64,7 +65,7 @@ public class RoadmapService {
     public void createRoadmap(RoadmapRequest request, String email) {
 
         RoadmapType type =  RoadmapType.fromString(request.getType());
-        String language = request.getLanguage().toString();
+        LanguageType language = LanguageType.fromString(request.getLanguage());
         String algorithm = request.getAlgorithm();
 
         List<Long> problemIds = aiService.createRoadmap(
@@ -104,10 +105,10 @@ public class RoadmapService {
         }
     }
 
-    private String createRoadmapName(RoadmapType type, String language, String algorithm){
+    private String createRoadmapName(RoadmapType type, LanguageType language, String algorithm){
         return type.toString()
                 + (algorithm != null ? " " + algorithm : "")
-                + " " + language + " 로드맵";
+                + " " + language.toString() + " 로드맵";
     }
 
     public List<RoadmapResponse> getRoadmaps(String email) {
@@ -127,7 +128,7 @@ public class RoadmapService {
                         .orElseThrow(() -> new CustomException(ErrorCode.ROADMAP_NOT_FOUND));
 
         if (roadmap.getMember() != member){
-            throw new CustomException(ErrorCode.ACCESS_DENIED);
+            throw new CustomException(ErrorCode.ROADMAP_ACCESS_DENIED);
         }
 
         roadmapRepository.delete(roadmap);

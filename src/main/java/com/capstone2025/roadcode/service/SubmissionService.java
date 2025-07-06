@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +49,7 @@ public class SubmissionService {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
 
-        String language = request.getLanguage();
+        LanguageType language = LanguageType.fromString(request.getLanguage());
         String code = request.getSourceCode();
 
         List<Testcase> testcases = testcaseRepository.findByProblemId(problemId);
@@ -91,7 +92,7 @@ public class SubmissionService {
     }
 
     // 코드 파일 생성 및 도커 실행 dto 생성
-    private DockerExecutionContext prepareCodeFile(String language, String sourceCode) {
+    private DockerExecutionContext prepareCodeFile(LanguageType language, String sourceCode) {
         String uuid = UUID.randomUUID().toString();
         String codeDir = codeSaveDir + "/" + uuid;
 
@@ -101,7 +102,7 @@ public class SubmissionService {
             throw new CustomException(ErrorCode.FILE_WRITE_FAILED);
         }
 
-        LanguageType languageType = LanguageType.fromString(language);
+        LanguageType languageType = language;
         String codeFilePath = codeDir + "/" + codeFileName + languageType.getExtension();
 
         try {
@@ -206,6 +207,7 @@ public class SubmissionService {
         }
     }
 
+    // 레벨테스트 제출
     public LevelTestResultResponse submitLevelTest(String email, LevelTestSubmissionsRequest request) {
 
         List<Boolean> result = new ArrayList<>();
@@ -229,4 +231,28 @@ public class SubmissionService {
 
         return new LevelTestResultResponse(request.getSubmissions().size(), result, (int)count);
     }
+
+    public OtherMemberSubmissionListResponse getOtherSuccessfulSubmissions(String email, Long problemId) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+
+        // 사용자가 해당 문제를 풀었는지 검사
+        boolean isSolved = submissionRepository.existsByMemberIdAndProblemIdAndIsSuccessTrue(member.getId(), problemId);
+
+        if(!isSolved){
+            throw new CustomException(ErrorCode.REVIEW_ACCESS_DENIED);
+        }
+
+        List<Submission> submissions = submissionRepository.findByProblemIdAndIsSuccessTrue(problemId);
+
+        List<OtherMemberSubmissionResponse> submissionsResponse = submissions.stream()
+                .map(OtherMemberSubmissionResponse::from)
+                .collect(Collectors.toList());
+
+        return new OtherMemberSubmissionListResponse(submissionsResponse, submissionsResponse.size());
+    }
+
 }

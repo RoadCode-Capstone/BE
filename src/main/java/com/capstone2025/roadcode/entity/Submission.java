@@ -1,6 +1,7 @@
 package com.capstone2025.roadcode.entity;
 
 import com.capstone2025.roadcode.common.CreatedOnlyEntity;
+import com.capstone2025.roadcode.common.LanguageType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +29,8 @@ public class Submission extends CreatedOnlyEntity {
     @Column
     private String sourceCode;
 
-    private String language;
+    @Enumerated(value = EnumType.STRING)
+    private LanguageType language;
 
     private boolean isSuccess;
 
@@ -36,7 +38,7 @@ public class Submission extends CreatedOnlyEntity {
     private List<Review> reviews = new ArrayList<>();
 
     @Builder
-    private Submission(Problem problem, Member member, String sourceCode, String language, boolean isSuccess) {
+    private Submission(Problem problem, Member member, String sourceCode, LanguageType language, boolean isSuccess) {
 
         this.problem = problem;
         this.member = member;
@@ -45,7 +47,7 @@ public class Submission extends CreatedOnlyEntity {
         this.isSuccess = isSuccess;
     }
 
-    public static Submission create(Problem problem, Member member, String sourceCode, String language, boolean isSuccess) {
+    public static Submission create(Problem problem, Member member, String sourceCode, LanguageType language, boolean isSuccess) {
         return Submission.builder()
                 .problem(problem)
                 .member(member)

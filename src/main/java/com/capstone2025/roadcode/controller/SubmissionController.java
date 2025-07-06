@@ -1,10 +1,7 @@
 package com.capstone2025.roadcode.controller;
 
 import com.capstone2025.roadcode.common.ApiResponse;
-import com.capstone2025.roadcode.dto.LevelTestResultResponse;
-import com.capstone2025.roadcode.dto.LevelTestSubmissionsRequest;
-import com.capstone2025.roadcode.dto.SubmitSolutionRequest;
-import com.capstone2025.roadcode.dto.SubmitSolutionResponse;
+import com.capstone2025.roadcode.dto.*;
 import com.capstone2025.roadcode.service.SubmissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -41,11 +38,13 @@ public class SubmissionController {
 //        return ApiResponse.successWithMessage("");
 //    }
 //
-//    // 다른 사람 풀이 목록 조회
-//    @GetMapping()
-//    public ApiResponse<?> getOtherSolutions() {
-//        return ApiResponse.successWithMessage("");
-//    }
+    // 다른 사람 풀이 목록 조회
+    @GetMapping("problem/{problemId}/submissions/success")
+    public ApiResponse<OtherMemberSubmissionListResponse> getOtherSuccessfulSubmissions(Authentication authentication, @PathVariable Long problemId) {
+
+        String email = authentication.getName();
+        return ApiResponse.success(submissionService.getOtherSuccessfulSubmissions(email, problemId));
+    }
 //
 //    // 내가 푼 풀이 목록 조회
 //    @GetMapping()

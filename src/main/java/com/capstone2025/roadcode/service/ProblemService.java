@@ -49,6 +49,7 @@ public class ProblemService {
                 .collect(Collectors.toList());
     }
 
+    // 레벨 테스트 문제 조회 시 사용(ai에게서 받아온 문제 id를 모두 찾아와서 문제 목록을 반환)
     public List<ProblemResponse> getProblemsByIdsWithTags(List<Long> ids) {
         List<Problem> problems = problemRepository.findAllByIdInWithTags(ids);
 

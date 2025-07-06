@@ -26,7 +26,9 @@ public enum ErrorCode {
     FILE_DELETE_FAILED("E017", "소스 코드 파일 삭제에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     ROADMAP_NOT_FOUND("E018", "로드맵을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_ROADMAP_TYPE("E019", "지원하지 않는 로드맵 종류입니다.", HttpStatus.BAD_REQUEST),
-    PROBLEM_TAG_NOT_FOUND("E020", "문제 태그를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+    PROBLEM_TAG_NOT_FOUND("E020", "문제 태그를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    ROADMAP_ACCESS_DENIED("E021", "해당 로드맵에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN),
+    REVIEW_ACCESS_DENIED("E022", "해당 문제 풀이에 성공하지 않았기 때문에 다른 사람의 풀이에 접근할 수 없습니다.", HttpStatus.FORBIDDEN);
 
     private final String code;
     private final String message;
