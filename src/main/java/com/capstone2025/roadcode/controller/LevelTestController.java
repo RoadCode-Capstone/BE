@@ -1,8 +1,10 @@
 package com.capstone2025.roadcode.controller;
 
 import com.capstone2025.roadcode.common.ApiResponse;
-import com.capstone2025.roadcode.dto.LevelTestRequest;
+import com.capstone2025.roadcode.dto.LevelTestCreateRequest;
+import com.capstone2025.roadcode.dto.LevelTestCreateResponse;
 import com.capstone2025.roadcode.entity.RoadmapType;
+import com.capstone2025.roadcode.service.LevelTestService;
 import com.capstone2025.roadcode.service.OpenAIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,25 +19,10 @@ import java.util.List;
 @RequestMapping("/api/v1/level-test")
 public class LevelTestController {
 
-    private final OpenAIService openAiService;
-
-//    @PostMapping("/roadmap")
-//    public ApiResponse<List<Long>> generateRoadmap(@RequestBody RoadmapRequest request) {
-//        List<Long> result = openAiService.createRoadmap(
-//                request.getType(),
-//                request.getAlgorithm(),
-//                request.getDailyGoal(),
-//                request.getLevelTestResult()
-//        );
-//        return ApiResponse.success(result);
-//    }
+    private final LevelTestService levelTestService;
 
     @PostMapping()
-    public ApiResponse<List<Integer>> generateLevelTest(@RequestBody LevelTestRequest request) {
-        List<Integer> result = openAiService.createLevelTest(
-                RoadmapType.fromString(request.getType()),
-                request.getCategory()
-        );
-        return ApiResponse.success(result);
+    public ApiResponse<LevelTestCreateResponse> generateLevelTest(@RequestBody LevelTestCreateRequest request) {
+        return ApiResponse.success(levelTestService.createLevelTest(request));
     }
 }

@@ -17,8 +17,8 @@ public enum ErrorCode {
     PASSWORD_MISMATCH("E008", "비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST), // 로그인한 상태에서 확인(JWT 토큰 있음)
     MAIL_SEND_FAILED("E009", "메일 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_VERIFICATION_CODE("E010", "인증코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
-    UNAUTHORIZED_PASSWORD_RESET("E011", "유효하지 않은 비밀번호 재설정 요청입니다.", HttpStatus.FORBIDDEN),
-    UNAUTHORIZED_SIGNUP("E012","이메일을 인증해야합니다.", HttpStatus.FORBIDDEN),
+    PASSWORD_RESET_ACCESS_DENIED("E011", "유효하지 않은 비밀번호 재설정 요청입니다. 이메일을 인증하세요.", HttpStatus.FORBIDDEN),
+    SIGNUP_ACCESS_DENIED("E012","유효하지 않은 회원가입 요청입니다. 이메일을 인증하세요.", HttpStatus.FORBIDDEN),
     TESTCASE_NOT_FOUND_FOR_PROBLEM("E013", "해당 문제에 테스트케이스가 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
     PROBLEM_NOT_FOUND("E014", "문제를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_LANGUAGE_TYPE("E015", "지원하지 않는 언어입니다.", HttpStatus.BAD_REQUEST),
@@ -28,7 +28,10 @@ public enum ErrorCode {
     INVALID_ROADMAP_TYPE("E019", "지원하지 않는 로드맵 종류입니다.", HttpStatus.BAD_REQUEST),
     PROBLEM_TAG_NOT_FOUND("E020", "문제 태그를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     ROADMAP_ACCESS_DENIED("E021", "해당 로드맵에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN),
-    REVIEW_ACCESS_DENIED("E022", "해당 문제 풀이에 성공하지 않았기 때문에 다른 사람의 풀이에 접근할 수 없습니다.", HttpStatus.FORBIDDEN);
+    REVIEW_ACCESS_DENIED("E022", "해당 문제 풀이에 성공하지 않았기 때문에 다른 사람의 풀이에 접근할 수 없습니다.", HttpStatus.FORBIDDEN),
+    SUBMISSION_NOT_FOUND("E023", "풀이를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    REVIEW_SELF_ACCESS_DENIED("E024", "자신의 풀이에는 리뷰를 달 수 없습니다.", HttpStatus.FORBIDDEN),
+    REVIEW_NOT_FOUND("E025", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
 
     private final String code;
     private final String message;

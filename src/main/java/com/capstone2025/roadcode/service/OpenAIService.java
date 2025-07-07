@@ -167,7 +167,7 @@ public class OpenAIService {
     }
 
     /* 레벨테스트 생성 함수(학습 유형, 알고리즘) */
-    public List<Integer> createLevelTest(RoadmapType type, String algorithm) {
+    public List<Long> createLevelTest(RoadmapType type, String algorithm) {
         /*
         총 문제 수 : 5
         각 문제 난이도 : 800, 1000, 1300, 1500, 1800
@@ -190,7 +190,7 @@ public class OpenAIService {
         List<Integer> problemRatings = new ArrayList<>(Arrays.asList(800, 1000, 1300, 1500, 1800));
 
         // 선택한 문제 아이디 리스트
-        List<Integer> problemIds = new ArrayList<>();
+        List<Long> problemIds = new ArrayList<>();
 
         // 특정 난이도의 후보 문제 중 랜덤으로 결정하여 문제 아이디 저장
         for (int targetRating : problemRatings) {
@@ -218,7 +218,7 @@ public class OpenAIService {
             // 선택한 문제 아이디를 리스트에 추가
             for (String id : response.trim().split(" ")) {
                 if (!id.isEmpty()) {
-                    problemIds.add(Integer.parseInt(id));
+                    problemIds.add(Long.parseLong(id));
                 }
             }
         }

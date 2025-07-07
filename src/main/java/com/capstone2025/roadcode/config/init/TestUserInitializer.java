@@ -28,5 +28,9 @@ public class TestUserInitializer implements CommandLineRunner {
         Member testUser = Member.localCreate("test@example.com", passwordEncoder.encode("1234"), "테스트유저");
 
         memberRepository.save(testUser);
+
+        Member testUser1 = Member.localCreate("test1@example.com", passwordEncoder.encode("12341"), "테스트유저1");
+
+        memberRepository.save(testUser1);
     }
 }

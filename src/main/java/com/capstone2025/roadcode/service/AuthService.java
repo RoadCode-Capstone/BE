@@ -42,7 +42,7 @@ public class AuthService {
 
         // 인증코드 검증했는지 확인
         if(!verificationService.isVerified(email)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_SIGNUP);
+            throw new CustomException(ErrorCode.SIGNUP_ACCESS_DENIED);
         }
 
         // Member 객체 생성
@@ -118,7 +118,7 @@ public class AuthService {
         // 인증코드 검증 완료한 회원인지 확인
         boolean isVerified = verificationService.isVerified(email);
         if(!isVerified) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_PASSWORD_RESET);
+            throw new CustomException(ErrorCode.PASSWORD_RESET_ACCESS_DENIED);
         }
 
         // 비밀번호 재설정

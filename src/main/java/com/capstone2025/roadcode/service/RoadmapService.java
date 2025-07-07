@@ -1,10 +1,7 @@
 package com.capstone2025.roadcode.service;
 
 import com.capstone2025.roadcode.common.LanguageType;
-import com.capstone2025.roadcode.dto.RoadmapInfoResponse;
-import com.capstone2025.roadcode.dto.RoadmapProblemResponse;
-import com.capstone2025.roadcode.dto.RoadmapRequest;
-import com.capstone2025.roadcode.dto.RoadmapResponse;
+import com.capstone2025.roadcode.dto.*;
 import com.capstone2025.roadcode.entity.*;
 import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
@@ -45,24 +42,19 @@ public class RoadmapService {
     }
 
     // 로드맵 문제 목록 조회
-    public List<RoadmapProblemResponse> getRoadmapProblems(Long roadmapId) {
+    public RoadmapProblemListResponse getRoadmapProblems(Long roadmapId) {
 
         List<RoadmapProblem> roadmapProblems = roadmapProblemRepository.findByRoadmapId(roadmapId);
 
         List<RoadmapProblemResponse> roadmapProblemResponses = roadmapProblems.stream()
-                .map(rp -> new RoadmapProblemResponse(
-                        rp.getId(),
-                        rp.getProblem().getId(),
-                        rp.getSequence(),
-                        rp.getStatus()
-                ))
+                .map(RoadmapProblemResponse::from)
                 .collect(Collectors.toList());
-        return roadmapProblemResponses;
+        return new RoadmapProblemListResponse(roadmapProblemResponses);
     }
 
     // 문제 list 로드맵 db에 저장
     @Transactional // 문제 못찾는 경우, roadmap save도 취소
-    public void createRoadmap(RoadmapRequest request, String email) {
+    public void createRoadmap(RoadmapCreateRequest request, String email) {
 
         RoadmapType type =  RoadmapType.fromString(request.getType());
         LanguageType language = LanguageType.fromString(request.getLanguage());
@@ -74,13 +66,6 @@ public class RoadmapService {
                 request.getDailyGoal(),
                 request.getLevelTestResult()
         );
-
-//        // 서버 올리기 전 삭제
-//        System.out.println(problemIds);
-//
-//        problemIds.clear();
-//        problemIds.add(1L);
-//        problemIds.add(2L);
 
         Member member = memberService.findByEmail(email);
 
@@ -111,13 +96,13 @@ public class RoadmapService {
                 + " " + language.toString() + " 로드맵";
     }
 
-    public List<RoadmapResponse> getRoadmaps(String email) {
+    public RoadmapListResponse getRoadmaps(String email) {
         Member member = memberService.findByEmail(email);
         List<RoadmapResponse> roadmaps = roadmapRepository.findByMember(member).stream()
-                .map(rm -> new RoadmapResponse(rm.getId(), rm.getTitle(), rm.getType(), rm.getLanguage(), rm.getAlgorithm(), rm.getStatus()))
+                .map(RoadmapResponse::from)
                 .collect(Collectors.toList());
 
-        return roadmaps;
+        return new RoadmapListResponse(roadmaps);
     }
 
     @Transactional

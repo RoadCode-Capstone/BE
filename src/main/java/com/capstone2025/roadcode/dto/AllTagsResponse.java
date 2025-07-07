@@ -11,5 +11,5 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class AllTagsResponse {
-    private List<String> names = new ArrayList<>();
+    private List<String> tagNames = new ArrayList<>();
 }

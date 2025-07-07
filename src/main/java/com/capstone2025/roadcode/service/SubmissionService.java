@@ -32,7 +32,7 @@ public class SubmissionService {
 
     private final TestcaseRepository testcaseRepository;
     private final ProblemRepository problemRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final SubmissionRepository submissionRepository;
 
     @Value("${spring.code.save-dir}") //로컬 환경 path(서버로 변경하면 바꿔야함)
@@ -44,8 +44,7 @@ public class SubmissionService {
     @Transactional
     public SubmitSolutionResponse submitSolution(String email, Long problemId, SubmitSolutionRequest request){
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Member member = memberService.findByEmail(email);
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
 
@@ -232,19 +231,15 @@ public class SubmissionService {
         return new LevelTestResultResponse(request.getSubmissions().size(), result, (int)count);
     }
 
+    // 특정 문제에 대한 다른 사람 풀이 목록 가져오기
     public OtherMemberSubmissionListResponse getOtherSuccessfulSubmissions(String email, Long problemId) {
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Member member = memberService.findByEmail(email);
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
 
         // 사용자가 해당 문제를 풀었는지 검사
-        boolean isSolved = submissionRepository.existsByMemberIdAndProblemIdAndIsSuccessTrue(member.getId(), problemId);
-
-        if(!isSolved){
-            throw new CustomException(ErrorCode.REVIEW_ACCESS_DENIED);
-        }
+        validateSolvedProblem(member.getId(), problemId);
 
         List<Submission> submissions = submissionRepository.findByProblemIdAndIsSuccessTrue(problemId);
 
@@ -253,6 +248,20 @@ public class SubmissionService {
                 .collect(Collectors.toList());
 
         return new OtherMemberSubmissionListResponse(submissionsResponse, submissionsResponse.size());
+    }
+
+    // 사용자가 해당 문제를 풀었는지 검사
+    public void validateSolvedProblem(Long memberId, Long problemId) {
+
+        boolean isSolved = submissionRepository.existsByMemberIdAndProblemIdAndIsSuccessTrue(memberId, problemId);
+        if(!isSolved){
+            throw new CustomException(ErrorCode.REVIEW_ACCESS_DENIED);
+        }
+    }
+
+    public Submission findById(Long submissionId) {
+        return submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SUBMISSION_NOT_FOUND));
     }
 
 }

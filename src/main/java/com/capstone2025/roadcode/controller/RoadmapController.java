@@ -1,10 +1,7 @@
 package com.capstone2025.roadcode.controller;
 
 import com.capstone2025.roadcode.common.ApiResponse;
-import com.capstone2025.roadcode.dto.RoadmapInfoResponse;
-import com.capstone2025.roadcode.dto.RoadmapProblemResponse;
-import com.capstone2025.roadcode.dto.RoadmapRequest;
-import com.capstone2025.roadcode.dto.RoadmapResponse;
+import com.capstone2025.roadcode.dto.*;
 import com.capstone2025.roadcode.service.RoadmapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -20,7 +17,7 @@ public class RoadmapController {
 
     // 로드맵 생성
     @PostMapping
-    public ApiResponse<String> createRoadmap(@RequestBody RoadmapRequest request, Authentication authentication) {
+    public ApiResponse<Void> createRoadmap(@RequestBody RoadmapCreateRequest request, Authentication authentication) {
 
         String email = authentication.getName();
         roadmapService.createRoadmap(request, email);
@@ -30,7 +27,7 @@ public class RoadmapController {
 
     // 회원이 가진 로드맵 목록 조회
     @GetMapping("/my")
-    public ApiResponse<List<RoadmapResponse>> getRoadmaps(Authentication authentication) {
+    public ApiResponse<RoadmapListResponse> getRoadmaps(Authentication authentication) {
         String email = authentication.getName();
 
         return ApiResponse.success(roadmapService.getRoadmaps(email));
@@ -44,14 +41,14 @@ public class RoadmapController {
 
     // 로드맵 문제 목록 조회 (상세 문제 조회는 id 사용해서- ProblemController)
     @GetMapping("/{roadmapId}/problems")
-    public ApiResponse<List<RoadmapProblemResponse>> getRoadmapProblems(@PathVariable Long roadmapId) {
-        List<RoadmapProblemResponse> problems = roadmapService.getRoadmapProblems(roadmapId);
+    public ApiResponse<RoadmapProblemListResponse> getRoadmapProblems(@PathVariable Long roadmapId) {
+        RoadmapProblemListResponse problems = roadmapService.getRoadmapProblems(roadmapId);
         return ApiResponse.success(problems);
     }
 
     // 로드맵 삭제 (테스트/시연)
     @DeleteMapping("/{roadmapId}")
-    public ApiResponse<String> deleteRoadmap(@PathVariable Long roadmapId, Authentication authentication) {
+    public ApiResponse<Void> deleteRoadmap(@PathVariable Long roadmapId, Authentication authentication) {
         String email = authentication.getName();
         roadmapService.deleteRoadmap(roadmapId, email);
 

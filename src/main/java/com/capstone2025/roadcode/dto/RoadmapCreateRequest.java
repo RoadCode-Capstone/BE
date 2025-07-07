@@ -3,7 +3,7 @@ package com.capstone2025.roadcode.dto;
 import lombok.Getter;
 
 @Getter
-public class RoadmapRequest {
+public class RoadmapCreateRequest {
     private String type;
     private String language;
     private String algorithm;
