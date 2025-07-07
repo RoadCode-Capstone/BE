@@ -5,5 +5,6 @@ import lombok.Getter;
 @Getter
 public class LevelTestCreateRequest {
     private String type;
-    private String category;
+    private String language;
+    private String algorithm;
 }
