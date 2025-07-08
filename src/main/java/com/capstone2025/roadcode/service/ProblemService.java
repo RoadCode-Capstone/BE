@@ -51,7 +51,7 @@ public class ProblemService {
         }
     }
 
-    // 레벨 테스트 문제 조회 시 사용(ai에게서 받아온 문제 id를 모두 찾아와서 문제 목록을 반환)
+    // 특정 태그가 포함된 문제 목록 반환
     public List<ProblemResponse> getProblemsByTagIdWithTags(Long tagId) {
         List<Problem> problems = problemRepository.findAllByTagIdWithTags(tagId);
         return problems.stream()

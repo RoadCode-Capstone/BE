@@ -25,7 +25,7 @@ public class ProblemResponse {
     private String memoryLimit;
     private String url;
     //private LocalDateTime createdAt;
-    private AllTagsResponse tags;
+    private List<String> tags;
 
     public static ProblemResponse from(Problem problem) {
         return new ProblemResponse(
@@ -41,7 +41,9 @@ public class ProblemResponse {
                 problem.getMemoryLimit(),
                 problem.getUrl(),
                 //problem.getCreatedAt(),
-                AllTagsResponse.from(problem)
+                problem.getProblemTags().stream()
+                        .map(pt -> pt.getTag().getName())
+                        .collect(Collectors.toList())
         );
     }
 }
