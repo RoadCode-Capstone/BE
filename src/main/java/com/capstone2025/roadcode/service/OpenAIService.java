@@ -4,6 +4,7 @@ import com.capstone2025.roadcode.dto.ProblemResponse;
 import com.capstone2025.roadcode.entity.RoadmapType;
 import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
+import com.capstone2025.roadcode.repository.ProblemRepository;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;

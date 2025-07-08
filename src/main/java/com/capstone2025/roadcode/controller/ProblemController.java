@@ -22,19 +22,12 @@ public class ProblemController {
         return ApiResponse.success(problemService.getProblemInfo(problemId));
     }
 
-    // 문제 목록 전체 조회
+    // 레벨테스트 시, 특정 id 집합 문제 목록 조회
     @GetMapping
     public ApiResponse<ProblemListResponse> getProblems(
             @RequestParam(required = false) List<Long> ids
     ) {
-        ProblemListResponse response;
 
-        if (ids != null && !ids.isEmpty()) {
-            response = problemService.getProblemsByIdsWithTags(ids);
-        } else {
-            response = problemService.getAllProblemsWithTags();
-        }
-
-        return ApiResponse.success(response);
+        return ApiResponse.success(problemService.getAllProblems(ids));
     }
 }

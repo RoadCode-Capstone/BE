@@ -25,22 +25,27 @@ public class ProblemService {
     }
 
     // 문제 목록 전체 조회
-    public ProblemListResponse getAllProblemsWithTags() {
+    // OpenAIService에서 사용
+    public List<ProblemResponse> getAllProblemsWithTags() {
         List<Problem> problems = problemRepository.findAllWithTags();
-        List<ProblemResponse> problemResponses = problems.stream()
+        return problems.stream()
                 .map(ProblemResponse::from)
                 .collect(Collectors.toList());
-
-        return new ProblemListResponse(problemResponses);
     }
 
     // 레벨 테스트 문제 조회 시 사용(ai에게서 받아온 문제 id를 모두 찾아와서 문제 목록을 반환)
-    public ProblemListResponse getProblemsByIdsWithTags(List<Long> ids) {
+    public List<ProblemResponse> getProblemsByIdsWithTags(List<Long> ids) {
         List<Problem> problems = problemRepository.findAllByIdInWithTags(ids);
-        List<ProblemResponse> problemResponses = problems.stream()
+        return problems.stream()
                 .map(ProblemResponse::from)
                 .collect(Collectors.toList());
+    }
 
-        return new ProblemListResponse(problemResponses);
+    public ProblemListResponse getAllProblems(List<Long> ids) {
+        if (ids != null && !ids.isEmpty()) {
+            return new ProblemListResponse(getProblemsByIdsWithTags(ids));
+        } else {
+            return new ProblemListResponse(getAllProblemsWithTags());
+        }
     }
 }
