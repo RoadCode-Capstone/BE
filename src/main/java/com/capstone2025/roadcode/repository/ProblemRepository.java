@@ -25,5 +25,4 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
             "WHERE t.id = :tagId")
     List<Problem> findAllByTagIdWithTags(@Param("tagId") Long tagId);
 
-    List<Problem> findByRating(String rating);
 }
