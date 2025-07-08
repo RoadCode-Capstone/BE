@@ -1,7 +1,7 @@
 package com.capstone2025.roadcode.controller;
 
 import com.capstone2025.roadcode.common.ApiResponse;
-import com.capstone2025.roadcode.dto.ProblemInfoResponse;
+import com.capstone2025.roadcode.dto.ProblemListResponse;
 import com.capstone2025.roadcode.dto.ProblemResponse;
 import com.capstone2025.roadcode.service.ProblemService;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +18,16 @@ public class ProblemController {
 
     // 문제 조회
     @GetMapping("/{problemId}")
-    public ApiResponse<ProblemInfoResponse> getProblemInfo(@PathVariable Long problemId) {
+    public ApiResponse<ProblemResponse> getProblemInfo(@PathVariable Long problemId) {
         return ApiResponse.success(problemService.getProblemInfo(problemId));
     }
 
     // 문제 목록 전체 조회
     @GetMapping
-    public ApiResponse<List<ProblemResponse>> getProblems(
+    public ApiResponse<ProblemListResponse> getProblems(
             @RequestParam(required = false) List<Long> ids
     ) {
-        List<ProblemResponse> response;
+        ProblemListResponse response;
 
         if (ids != null && !ids.isEmpty()) {
             response = problemService.getProblemsByIdsWithTags(ids);
