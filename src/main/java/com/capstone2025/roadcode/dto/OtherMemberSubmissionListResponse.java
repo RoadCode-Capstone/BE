@@ -11,5 +11,4 @@ import java.util.List;
 @Getter
 public class OtherMemberSubmissionListResponse {
     List<OtherMemberSubmissionResponse> submissions;
-    int total; // 총 리뷰 개수
 }

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProblemResponse {
-    private Long id;
+    private Long problemId;
     private Integer contestId;
     private String index;
     private String name;
@@ -25,7 +25,7 @@ public class ProblemResponse {
     private String memoryLimit;
     private String url;
     //private LocalDateTime createdAt;
-    private List<String> tags;
+    private AllTagsResponse tags;
 
     public static ProblemResponse from(Problem problem) {
         return new ProblemResponse(
@@ -41,9 +41,7 @@ public class ProblemResponse {
                 problem.getMemoryLimit(),
                 problem.getUrl(),
                 //problem.getCreatedAt(),
-                problem.getProblemTags().stream()
-                        .map(pt -> pt.getTag().getName())
-                        .collect(Collectors.toList())
+                AllTagsResponse.from(problem)
         );
     }
 }

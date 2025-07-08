@@ -4,10 +4,8 @@ import com.capstone2025.roadcode.dto.ProblemResponse;
 import com.capstone2025.roadcode.entity.RoadmapType;
 import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
-import com.capstone2025.roadcode.repository.ProblemRepository;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
-import okhttp3.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -138,7 +136,7 @@ public class OpenAIService {
             // 후보 문제의 아이디와 태그를 텍스트화
             StringBuilder stringBuilder = new StringBuilder();
             for (ProblemResponse problem : targetProblems) {
-                stringBuilder.append(problem.getId())
+                stringBuilder.append(problem.getProblemId())
                         .append(", ")
                         .append(new Gson().toJson(problem.getTags()))
                         .append("\n");
@@ -201,7 +199,7 @@ public class OpenAIService {
             // 후보 문제의 아이디와 태그를 텍스트화
             StringBuilder stringBuilder = new StringBuilder();
             for (ProblemResponse problem : targetProblems) {
-                stringBuilder.append(problem.getId())
+                stringBuilder.append(problem.getProblemId())
                         .append(", ")
                         .append(new Gson().toJson(problem.getTags()))
                         .append("\n");
