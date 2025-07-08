@@ -1,10 +1,10 @@
 package com.capstone2025.roadcode.service;
 
 import com.capstone2025.roadcode.dto.ProblemResponse;
+import com.capstone2025.roadcode.entity.Problem;
 import com.capstone2025.roadcode.entity.RoadmapType;
 import com.capstone2025.roadcode.entity.Tag;
-import com.capstone2025.roadcode.exception.CustomException;
-import com.capstone2025.roadcode.exception.ErrorCode;
+import com.capstone2025.roadcode.repository.ProblemRepository;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import com.google.gson.JsonArray;
@@ -25,7 +25,6 @@ public class OpenAIService {
     private String apiKey;
 
     private final ProblemService problemService;
-    private final TagService tagService;
 
 //    public static void main(String[] args) {
 ////        List<Problem> problems = getProblems();   // TEST
@@ -97,15 +96,7 @@ public class OpenAIService {
         선택한 문제 아이디 리스트를 리턴
          */
 
-        List<ProblemResponse> problems = new ArrayList<>();
-
-        // 학습 유형이 알고리즘이면 해당하는 문제 목록을 후보로 저장
-        if (type == RoadmapType.Algorithm) {
-            Tag tag = tagService.findByName(algorithm);
-            problems = problemService.getProblemsByTagIdWithTags(tag.getId());
-        } else if(type == RoadmapType.Language) {
-            problems = problemService.getAllProblemsWithTags();
-        }
+        List<Problem> problems = problemService.getProblemsByRoadmapTypeAndAlgorithm(type, algorithm);
 
         // 난이도별 개수 저장
         Map<Integer, Integer> ratingProblemCnt = new LinkedHashMap<>();
@@ -131,18 +122,8 @@ public class OpenAIService {
             int targetRating = levelTestResult + diff;  // 후보 난이도
 
             // 후보 난이도에 해당하는 문제 목록을 후보로 저장
-            List<ProblemResponse> targetProblems = filterByRating(problems, targetRating);
-
-            // id, tags만 보내면 약 10원. description도 같이 보내면 약 200원. (2000문제 기준)
-            // 후보 문제의 아이디와 태그를 텍스트화
-            StringBuilder stringBuilder = new StringBuilder();
-            for (ProblemResponse problem : targetProblems) {
-                stringBuilder.append(problem.getProblemId())
-                        .append(", ")
-                        .append(new Gson().toJson(problem.getTags()))
-                        .append("\n");
-            }
-            String problemText = stringBuilder.toString();
+            List<ProblemResponse> targetProblems = problemService.filterByRating(problems, targetRating);
+            String problemText = convertProblemsToText(targetProblems);
 
             // 프롬프트 작성 (문제 목록 중에서 cnt개 만큼 골라서 고른 문제의 id만 보내줘)
             String rule = "You're a problem recommender. The user gives a list of problems, one per line, in the format: 'id, tag1 tag2 ...'. Choose N relevant problems and return only their ids, separated by spaces. No explanation.";
@@ -175,15 +156,7 @@ public class OpenAIService {
         선택한 문제 아이디 리스트를 리턴
          */
 
-        List<ProblemResponse> problems = new ArrayList<>();
-
-        // 학습 유형이 알고리즘이면 해당하는 문제 목록을 후보로 저장
-        if (type == RoadmapType.Algorithm) {
-            Tag tag = tagService.findByName(algorithm);
-            problems = problemService.getProblemsByTagIdWithTags(tag.getId());
-        } else if(type == RoadmapType.Language) {
-            problems = problemService.getAllProblemsWithTags();
-        }
+        List<Problem> problems = problemService.getProblemsByRoadmapTypeAndAlgorithm(type, algorithm);
 
         // 각 문제 난이도 저장
         List<Integer> problemRatings = new ArrayList<>(Arrays.asList(800, 1000, 1300, 1500, 1800));
@@ -194,17 +167,8 @@ public class OpenAIService {
         // 특정 난이도의 후보 문제 중 랜덤으로 결정하여 문제 아이디 저장
         for (int targetRating : problemRatings) {
             // 후보 난이도에 해당하는 문제 목록을 후보로 저장
-            List<ProblemResponse> targetProblems = filterByRating(problems, targetRating);
-
-            // 후보 문제의 아이디와 태그를 텍스트화
-            StringBuilder stringBuilder = new StringBuilder();
-            for (ProblemResponse problem : targetProblems) {
-                stringBuilder.append(problem.getProblemId())
-                        .append(", ")
-                        .append(new Gson().toJson(problem.getTags()))
-                        .append("\n");
-            }
-            String problemText = stringBuilder.toString();
+            List<ProblemResponse> targetProblems = problemService.filterByRating(problems, targetRating);
+            String problemText = convertProblemsToText(targetProblems);
 
             // 프롬프트 작성 (문제 목록 중에서 cnt개 만큼 골라서 고른 문제의 id만 보내줘)
             String rule = "You're a problem recommender. The user gives a list of problems, one per line, in the format: 'id, tag1 tag2 ...'. Choose 1 problem and return only its id. No explanation.";
@@ -227,10 +191,19 @@ public class OpenAIService {
         return problemIds;
     }
 
-    /* 특정 난이도를 가지는 문제 목록 조회 함수 */
-    public List<ProblemResponse> filterByRating(List<ProblemResponse> problems, int targetRating) {
-        return problems.stream()
-                .filter(p -> p.getRating() == targetRating)
-                .collect(Collectors.toList());
+    private String convertProblemsToText(List<ProblemResponse> problems) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Gson gson = new Gson(); // 한 번만 생성
+
+        // id, tags만 보내면 약 10원. description도 같이 보내면 약 200원. (2000문제 기준)
+        // 후보 문제의 아이디와 태그를 텍스트화
+        for (ProblemResponse problem : problems) {
+            stringBuilder.append(problem.getProblemId())
+                    .append(", ")
+                    .append(gson.toJson(problem.getTags()))
+                    .append("\n");
+        }
+
+        return stringBuilder.toString();
     }
 }

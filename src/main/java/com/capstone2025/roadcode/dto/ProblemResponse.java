@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ProblemResponse {
     private Long problemId;
-    private Integer contestId;
+    private int contestId;
     private String index;
     private String name;
-    private Integer rating;
+    private int rating;
     private String description;
     private String inputDescription;
     private String outputDescription;

@@ -3,6 +3,7 @@ package com.capstone2025.roadcode.service;
 import com.capstone2025.roadcode.dto.ProblemListResponse;
 import com.capstone2025.roadcode.dto.ProblemResponse;
 import com.capstone2025.roadcode.entity.Problem;
+import com.capstone2025.roadcode.entity.RoadmapType;
 import com.capstone2025.roadcode.entity.Tag;
 import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProblemService {
     private final ProblemRepository problemRepository;
+    private final TagService tagService;
 
     public ProblemResponse getProblemInfo(Long problemId) {
         Problem problem = problemRepository.findById(problemId)
@@ -27,7 +30,6 @@ public class ProblemService {
     }
 
     // 문제 목록 전체 조회
-    // OpenAIService에서 사용
     public List<ProblemResponse> getAllProblemsWithTags() {
         List<Problem> problems = problemRepository.findAllWithTags();
         return problems.stream()
@@ -51,11 +53,22 @@ public class ProblemService {
         }
     }
 
-    // 특정 태그가 포함된 문제 목록 반환
-    public List<ProblemResponse> getProblemsByTagIdWithTags(Long tagId) {
-        List<Problem> problems = problemRepository.findAllByTagIdWithTags(tagId);
+    public List<ProblemResponse> filterByRating(List<Problem> problems, int rating) {
         return problems.stream()
                 .map(ProblemResponse::from)
+                .filter(p -> p.getRating() == rating)
                 .collect(Collectors.toList());
+    }
+
+    public List<Problem> getProblemsByRoadmapTypeAndAlgorithm(RoadmapType type, String algorithm) {
+
+        if (type == RoadmapType.Algorithm) {
+            Tag tag = tagService.findByName(algorithm);
+            return problemRepository.findAllByTagId(tag.getId());
+        } else if(type == RoadmapType.Language) {
+            return problemRepository.findAll();
+        } else {
+            throw new CustomException(ErrorCode.INVALID_ROADMAP_TYPE);
+        }
     }
 }

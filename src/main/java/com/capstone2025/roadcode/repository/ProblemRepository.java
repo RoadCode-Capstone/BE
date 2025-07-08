@@ -20,9 +20,9 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     List<Problem> findAllByIdInWithTags(@Param("ids") List<Long> ids);
 
     @Query("SELECT DISTINCT p FROM Problem p " +
-            "LEFT JOIN FETCH p.problemTags pt " +
-            "LEFT JOIN FETCH pt.tag t " +
+            "JOIN p.problemTags pt " +
+            "JOIN pt.tag t " +
             "WHERE t.id = :tagId")
-    List<Problem> findAllByTagIdWithTags(@Param("tagId") Long tagId);
+    List<Problem> findAllByTagId(@Param("tagId") Long tagId);
 
 }
