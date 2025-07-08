@@ -247,7 +247,7 @@ public class SubmissionService {
                 .map(OtherMemberSubmissionResponse::from)
                 .collect(Collectors.toList());
 
-        return new OtherMemberSubmissionListResponse(submissionsResponse, submissionsResponse.size());
+        return new OtherMemberSubmissionListResponse(submissionsResponse);
     }
 
     // 사용자가 해당 문제를 풀었는지 검사
