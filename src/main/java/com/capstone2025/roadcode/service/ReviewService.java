@@ -2,6 +2,8 @@ package com.capstone2025.roadcode.service;
 
 import com.capstone2025.roadcode.dto.CommentCreateRequest;
 import com.capstone2025.roadcode.dto.ReviewCreateRequest;
+import com.capstone2025.roadcode.dto.ReviewListResponse;
+import com.capstone2025.roadcode.dto.ReviewWithCommentsResponse;
 import com.capstone2025.roadcode.entity.Comment;
 import com.capstone2025.roadcode.entity.Member;
 import com.capstone2025.roadcode.entity.Review;
@@ -13,6 +15,9 @@ import com.capstone2025.roadcode.repository.ReviewRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +66,26 @@ public class ReviewService {
         // 답글 저장
         Comment comment = Comment.create(review, member, commentCreateRequest.getContent());
         commentRepository.save(comment);
+    }
+
+    public ReviewListResponse getAllReviewsBySubmissionIdWithComments(
+            String email, Long submissionId
+    ) {
+        Member member = memberService.findByEmail(email);
+        Submission submission = submissionService.findById(submissionId);
+
+        // 사용자가 해당 풀이의 문제를 풀었는지 확인 (리뷰를 작성할 수 있는 자격이 있는지)
+        Long memberId = member.getId();
+        Long problemId = submission.getProblem().getId();
+        submissionService.validateSolvedProblem(memberId, problemId);
+
+        List<Review> reviews = reviewRepository.findAllBySubmissionIdWithComments(submissionId);
+
+        List<ReviewWithCommentsResponse> reviewResponse = reviews.stream()
+                .map(ReviewWithCommentsResponse::from)
+                .collect(Collectors.toList());
+
+        return new ReviewListResponse(reviewResponse);
     }
 
 }

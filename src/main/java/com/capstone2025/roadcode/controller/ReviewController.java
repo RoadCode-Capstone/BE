@@ -3,6 +3,7 @@ package com.capstone2025.roadcode.controller;
 import com.capstone2025.roadcode.common.ApiResponse;
 import com.capstone2025.roadcode.dto.CommentCreateRequest;
 import com.capstone2025.roadcode.dto.ReviewCreateRequest;
+import com.capstone2025.roadcode.dto.ReviewListResponse;
 import com.capstone2025.roadcode.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -29,5 +30,12 @@ public class ReviewController {
         String email = authentication.getName();
         reviewService.createComment(email, reviewId, request);
         return ApiResponse.successWithMessage("답글 작성에 성공했습니다.");
+    }
+
+    @GetMapping("/submissions/{submissionId}/reviews-with-comments")
+    public ApiResponse<ReviewListResponse> getReviewsWithComments(Authentication authentication, @PathVariable Long submissionId){
+
+        String email = authentication.getName();
+        return ApiResponse.success(reviewService.getAllReviewsBySubmissionIdWithComments(email, submissionId));
     }
 }

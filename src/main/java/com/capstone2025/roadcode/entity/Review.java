@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,6 +30,9 @@ public class Review extends CreatedOnlyEntity {
     @Lob
     @Column
     private String content;
+
+    @OneToMany(mappedBy = "review")
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     private Review(Submission submission, Member member, String content){
