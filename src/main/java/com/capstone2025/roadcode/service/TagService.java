@@ -20,10 +20,6 @@ public class TagService {
         return new AllTagsResponse(tagRepository.findAllTagNames());
     }
 
-    public boolean containsTag(String algorithm){
-        return tagRepository.findAllTagNames().contains(algorithm);
-    }
-
     public Tag findByName(String algorithm) {
         return tagRepository.findByName(algorithm)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_TAG_NOT_FOUND));
