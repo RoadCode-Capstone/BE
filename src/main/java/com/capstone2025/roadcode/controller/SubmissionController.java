@@ -17,7 +17,7 @@ public class SubmissionController {
     private final SubmissionService submissionService;
 
     // 풀이 제출 (수정) problemId 받아서 실행
-    @PostMapping("/problems/{problemId}/solution")
+    @PostMapping("/problems/{problemId}/submission")
     public ApiResponse<SubmitSolutionResponse> submitSolution(@PathVariable Long problemId, @RequestBody SubmitSolutionRequest request, Authentication authentication) {
         // 사용자 id, 언어, 코드를 인자로 받음
         String email = authentication.getName();

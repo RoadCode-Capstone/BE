@@ -26,9 +26,13 @@ public class RoadmapService {
     private final MemberService memberService;
 
     // 로드맵 정보 조회(현재 진행중인 문제도 함께 줌)
-    public RoadmapInfoResponse getRoadmapInfo(Long roadmapId) {
+    public RoadmapInfoResponse getRoadmapInfo(String email, Long roadmapId) {
+
+        Member member = memberService.findByEmail(email);
         Roadmap roadmap = roadmapRepository.findById(roadmapId).
                 orElseThrow(() -> new CustomException(ErrorCode.ROADMAP_NOT_FOUND));
+
+        verifyRoadmapOwner(roadmap, member);
 
         RoadmapProblem roadmapProblem = roadmapProblemRepository.findByRoadmapIdAndStatus(
                 roadmapId, RoadmapProblemStatus.IN_PROGRESS)
@@ -42,7 +46,13 @@ public class RoadmapService {
     }
 
     // 로드맵 문제 목록 조회
-    public RoadmapProblemListResponse getRoadmapProblems(Long roadmapId) {
+    public RoadmapProblemListResponse getRoadmapProblems(String email, Long roadmapId) {
+
+        Member member = memberService.findByEmail(email);
+        Roadmap roadmap = roadmapRepository.findById(roadmapId).
+                orElseThrow(() -> new CustomException(ErrorCode.ROADMAP_NOT_FOUND));
+
+        verifyRoadmapOwner(roadmap, member);
 
         List<RoadmapProblem> roadmapProblems = roadmapProblemRepository.findByRoadmapId(roadmapId);
 
@@ -98,6 +108,7 @@ public class RoadmapService {
 
     public RoadmapListResponse getRoadmaps(String email) {
         Member member = memberService.findByEmail(email);
+
         List<RoadmapResponse> roadmaps = roadmapRepository.findByMember(member).stream()
                 .map(RoadmapResponse::from)
                 .collect(Collectors.toList());
@@ -107,15 +118,17 @@ public class RoadmapService {
 
     @Transactional
     public void deleteRoadmap(Long roadmapId, String email) {
-        Member member = memberService.findByEmail(email);
 
+        Member member = memberService.findByEmail(email);
         Roadmap roadmap = roadmapRepository.findById(roadmapId)
                         .orElseThrow(() -> new CustomException(ErrorCode.ROADMAP_NOT_FOUND));
+        verifyRoadmapOwner(roadmap, member);
+        roadmapRepository.delete(roadmap);
+    }
 
-        if (roadmap.getMember() != member){
+    public void verifyRoadmapOwner(Roadmap roadmap, Member member) {
+        if (roadmap.getMember().getId() != member.getId()) {
             throw new CustomException(ErrorCode.ROADMAP_ACCESS_DENIED);
         }
-
-        roadmapRepository.delete(roadmap);
     }
 }

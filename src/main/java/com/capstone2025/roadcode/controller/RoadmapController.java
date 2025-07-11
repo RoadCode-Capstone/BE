@@ -28,21 +28,25 @@ public class RoadmapController {
     // 회원이 가진 로드맵 목록 조회
     @GetMapping("/my")
     public ApiResponse<RoadmapListResponse> getRoadmaps(Authentication authentication) {
-        String email = authentication.getName();
 
+        String email = authentication.getName();
         return ApiResponse.success(roadmapService.getRoadmaps(email));
     }
 
     // 로드맵 정보 조회
     @GetMapping("/{roadmapId}")
-    public ApiResponse<RoadmapInfoResponse> getRoadmapInfo(@PathVariable Long roadmapId) {
-        return ApiResponse.success(roadmapService.getRoadmapInfo(roadmapId));
+    public ApiResponse<RoadmapInfoResponse> getRoadmapInfo(@PathVariable Long roadmapId, Authentication authentication) {
+
+        String email = authentication.getName();
+        return ApiResponse.success(roadmapService.getRoadmapInfo(email, roadmapId));
     }
 
     // 로드맵 문제 목록 조회 (상세 문제 조회는 id 사용해서- ProblemController)
     @GetMapping("/{roadmapId}/problems")
-    public ApiResponse<RoadmapProblemListResponse> getRoadmapProblems(@PathVariable Long roadmapId) {
-        RoadmapProblemListResponse problems = roadmapService.getRoadmapProblems(roadmapId);
+    public ApiResponse<RoadmapProblemListResponse> getRoadmapProblems(@PathVariable Long roadmapId, Authentication authentication) {
+
+        String email = authentication.getName();
+        RoadmapProblemListResponse problems = roadmapService.getRoadmapProblems(email, roadmapId);
         return ApiResponse.success(problems);
     }
 
