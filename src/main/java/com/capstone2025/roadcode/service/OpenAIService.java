@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import okhttp3.*;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OpenAIService {
     @Value("${openai.api.key}")
     private String apiKey;
@@ -55,6 +57,12 @@ public class OpenAIService {
         requestBody.addProperty("model", "gpt-4o-mini");
         requestBody.add("messages", messages);
 
+        // 로그 출력
+        log.info("[AI 요청 생성]");
+        log.info("Rule: {}", rule);
+        log.info("Prompt: {}", prompt);
+        log.info("Request JSON: {}", requestBody.toString());
+
         // HTTP 요청
         Request request = new Request.Builder()
                 .url("https://api.openai.com/v1/chat/completions")
@@ -69,10 +77,13 @@ public class OpenAIService {
         // 응답 처리
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
+                log.error("AI 호출 실패: {}", response);
                 throw new RuntimeException("AI 호출 실패: " + response);
             }
 
             String responseBody = response.body().string();
+            log.debug("AI 응답 원문: {}", responseBody);
+
             JsonObject json = JsonParser.parseString(responseBody).getAsJsonObject();
             String content = json
                     .getAsJsonArray("choices")
@@ -80,6 +91,7 @@ public class OpenAIService {
                     .getAsJsonObject("message")
                     .get("content").getAsString();
 
+            log.info("AI 응답 결과: {}", content.trim());
             return content.trim();
         } catch (Exception e) {
             throw new RuntimeException("AI 응답 처리 중 오류 발생", e);
@@ -176,7 +188,6 @@ public class OpenAIService {
 
             // AI 응답 생성
             String response = createAIResponse(rule, prompt);
-            System.out.println(response); // TEST
 
             // 선택한 문제 아이디를 리스트에 추가
             for (String id : response.trim().split(" ")) {
@@ -185,7 +196,6 @@ public class OpenAIService {
                 }
             }
         }
-        // System.out.println("problemIds: " + problemIds);  // TEST
 
         // 선택한 문제 아이디 리스트 리턴
         return problemIds;
