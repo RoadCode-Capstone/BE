@@ -9,6 +9,7 @@ import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
 import com.capstone2025.roadcode.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProblemService {
     private final ProblemRepository problemRepository;
     private final TagService tagService;
@@ -64,6 +66,8 @@ public class ProblemService {
 
         if (type == RoadmapType.Algorithm) {
             Tag tag = tagService.findByName(algorithm);
+            log.info("[In ProblemService.java]");
+            log.info("[tag 이름] : {}", tag);
             return problemRepository.findAllByTagId(tag.getId());
         } else if(type == RoadmapType.Language) {
             return problemRepository.findAll();

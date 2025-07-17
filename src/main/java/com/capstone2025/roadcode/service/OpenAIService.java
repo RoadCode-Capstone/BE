@@ -169,6 +169,8 @@ public class OpenAIService {
          */
 
         List<Problem> problems = problemService.getProblemsByRoadmapTypeAndAlgorithm(type, algorithm);
+        log.info("[In OpenAIService.java]");
+        log.info("[해당 알고리즘을 가진 문제 개수] : {}", problems.size());
 
         // 각 문제 난이도 저장
         List<Integer> problemRatings = new ArrayList<>(Arrays.asList(800, 1000, 1300, 1500, 1800));
@@ -180,6 +182,7 @@ public class OpenAIService {
         for (int targetRating : problemRatings) {
             // 후보 난이도에 해당하는 문제 목록을 후보로 저장
             List<ProblemResponse> targetProblems = problemService.filterByRating(problems, targetRating);
+            log.info("[후보 난이도에 해당하는 문제 개수] : {}", targetProblems.size());
             String problemText = convertProblemsToText(targetProblems);
 
             // 프롬프트 작성 (문제 목록 중에서 cnt개 만큼 골라서 고른 문제의 id만 보내줘)
