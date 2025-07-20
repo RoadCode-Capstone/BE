@@ -3,7 +3,7 @@ package com.capstone2025.roadcode.entity;
 import lombok.Getter;
 
 @Getter
-public enum PointReason {
+public enum PointType {
     ATTENDANCE("출석", 1),
     PROBLEM_SOLVED("문제 풀이 성공", 1),
     DAILY_GOAL_COMPLETED("오늘 목표 완료", 1),
@@ -13,7 +13,7 @@ public enum PointReason {
     private final String description;
     private final int point;
 
-    PointReason(String description, int point) {
+    PointType(String description, int point) {
         this.description = description;
         this.point = point;
     }
