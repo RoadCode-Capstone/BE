@@ -17,12 +17,11 @@ public class RoadmapController {
 
     // 로드맵 생성
     @PostMapping
-    public ApiResponse<Void> createRoadmap(@RequestBody RoadmapCreateRequest request, Authentication authentication) {
+    public ApiResponse<ReturnIdResponse> createRoadmap(@RequestBody RoadmapCreateRequest request, Authentication authentication) {
 
         String email = authentication.getName();
-        roadmapService.createRoadmap(request, email);
 
-        return ApiResponse.successWithMessage("로드맵이 생성되었습니다.");
+        return ApiResponse.success(roadmapService.createRoadmap(request, email));
     }
 
     // 회원이 가진 로드맵 목록 조회

@@ -64,7 +64,7 @@ public class RoadmapService {
 
     // 문제 list 로드맵 db에 저장
     @Transactional // 문제 못찾는 경우, roadmap save도 취소
-    public void createRoadmap(RoadmapCreateRequest request, String email) {
+    public ReturnIdResponse createRoadmap(RoadmapCreateRequest request, String email) {
 
         RoadmapType type =  RoadmapType.fromString(request.getType());
         LanguageType language = LanguageType.fromString(request.getLanguage());
@@ -98,6 +98,8 @@ public class RoadmapService {
             RoadmapProblem roadmapProblem = RoadmapProblem.create(roadmap, problem, i, status);
             roadmapProblemRepository.save(roadmapProblem);
         }
+
+        return new ReturnIdResponse(roadmap.getId());
     }
 
     private String createRoadmapName(RoadmapType type, LanguageType language, String algorithm){
