@@ -59,9 +59,7 @@ public class OpenAIService {
 
         // 로그 출력
         log.info("[AI 요청 생성]");
-        log.info("Rule: {}", rule);
         log.info("Prompt: {}", prompt);
-        log.info("Request JSON: {}", requestBody.toString());
 
         // HTTP 요청
         Request request = new Request.Builder()
@@ -82,7 +80,6 @@ public class OpenAIService {
             }
 
             String responseBody = response.body().string();
-            log.debug("AI 응답 원문: {}", responseBody);
 
             JsonObject json = JsonParser.parseString(responseBody).getAsJsonObject();
             String content = json
@@ -169,8 +166,6 @@ public class OpenAIService {
          */
 
         List<Problem> problems = problemService.getProblemsByRoadmapTypeAndAlgorithm(type, algorithm);
-        log.info("[In OpenAIService.java]");
-        log.info("[해당 알고리즘을 가진 문제 개수] : {}", problems.size());
 
         // 각 문제 난이도 저장
         List<Integer> problemRatings = new ArrayList<>(Arrays.asList(800, 1000, 1300, 1500, 1800));
@@ -178,11 +173,14 @@ public class OpenAIService {
         // 선택한 문제 아이디 리스트
         List<Long> problemIds = new ArrayList<>();
 
+        // 후보 문제 개수 확인
+        int targetProblemCnt = 0;
+
         // 특정 난이도의 후보 문제 중 랜덤으로 결정하여 문제 아이디 저장
         for (int targetRating : problemRatings) {
             // 후보 난이도에 해당하는 문제 목록을 후보로 저장
             List<ProblemResponse> targetProblems = problemService.filterByRating(problems, targetRating);
-            log.info("[후보 난이도에 해당하는 문제 개수] : {}", targetProblems.size());
+            targetProblemCnt += targetProblems.size()
             String problemText = convertProblemsToText(targetProblems);
 
             // 프롬프트 작성 (문제 목록 중에서 cnt개 만큼 골라서 고른 문제의 id만 보내줘)
@@ -199,6 +197,8 @@ public class OpenAIService {
                 }
             }
         }
+        log.info("[해당 알고리즘을 가진 문제 개수] : {}", problems.size());
+        log.info("[후보 난이도에 해당하는 문제 개수] : {}", targetProblemCnt);
 
         // 선택한 문제 아이디 리스트 리턴
         return problemIds;
