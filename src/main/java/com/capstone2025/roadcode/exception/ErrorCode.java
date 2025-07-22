@@ -31,7 +31,9 @@ public enum ErrorCode {
     REVIEW_ACCESS_DENIED("E022", "해당 문제 풀이에 성공하지 않았기 때문에 다른 사람의 풀이에 접근할 수 없습니다.", HttpStatus.FORBIDDEN),
     SUBMISSION_NOT_FOUND("E023", "풀이를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     REVIEW_SELF_ACCESS_DENIED("E024", "자신의 풀이에는 리뷰를 달 수 없습니다.", HttpStatus.FORBIDDEN),
-    REVIEW_NOT_FOUND("E025", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+    REVIEW_NOT_FOUND("E025", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    INVALID_PARAMETER_GROUP_BY("E026", "요청 파라미터 형식이 잘못됐습니다. (groupBy = TYPE 또는 DATE)", HttpStatus.BAD_REQUEST),
+    INVALID_DATE_FORMAT("E027", "날짜 형식이 잘못됐습니다. (yyyy-MM-dd)", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;
