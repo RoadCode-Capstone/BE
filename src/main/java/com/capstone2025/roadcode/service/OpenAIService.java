@@ -166,6 +166,8 @@ public class OpenAIService {
          */
 
         List<Problem> problems = problemService.getProblemsByRoadmapTypeAndAlgorithm(type, algorithm);
+        // 태그를 가진 총 문제 개수
+        int problemCntWithTag = problems.size();
 
         // 각 문제 난이도 저장
         List<Integer> problemRatings = new ArrayList<>(Arrays.asList(800, 1000, 1300, 1500, 1800));
@@ -197,8 +199,9 @@ public class OpenAIService {
                 }
             }
         }
-        log.info("[해당 알고리즘을 가진 문제 개수] : {}", problems.size());
+
         log.info("[후보 난이도에 해당하는 문제 개수] : {}", targetProblemCnt);
+        log.info("[해당 알고리즘을 가진 문제 개수] : {}", problemCntWithTag);
 
         // 선택한 문제 아이디 리스트 리턴
         return problemIds;
