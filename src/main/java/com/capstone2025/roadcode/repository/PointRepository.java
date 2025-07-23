@@ -1,6 +1,6 @@
 package com.capstone2025.roadcode.repository;
 
-import com.capstone2025.roadcode.dto.MemberPointRankResponse;
+import com.capstone2025.roadcode.dto.MemberPointRank;
 import com.capstone2025.roadcode.entity.Point;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -45,17 +45,17 @@ public interface PointRepository extends JpaRepository<Point, Long> {
 
     // 사용자 간 전체 순위
     @Query("""
-        SELECT new com.capstone2025.roadcode.dto.MemberPointRankResponse(
-            p.member.id,
-            p.member.nickname,
-            SUM(p.amount)
-        ) 
-        FROM Point p 
-        WHERE p.createdAt >= :startDate AND p.createdAt < :endDate 
-        GROUP BY p.member.id, p.member.nickname 
-        ORDER BY SUM(p.amount) DESC
+        SELECT new com.capstone2025.roadcode.dto.MemberPointRank(
+            m.id,
+            m.nickname,
+            COALESCE(SUM(p.amount), 0)
+        )
+        FROM Member m
+        LEFT JOIN Point p ON m.id = p.member.id AND p.createdAt >= :startDate AND p.createdAt < :endDate
+        GROUP BY m.id, m.nickname
+        ORDER BY COALESCE(SUM(p.amount), 0) DESC
     """)
-    List<MemberPointRankResponse> getMemberPointRanking(LocalDateTime startDate, LocalDateTime endDate);
+    List<MemberPointRank> findMemberPointRanking(LocalDateTime startDate, LocalDateTime endDate);
 
 //    @Query()
 //    List<Point> findAllByMemberId();

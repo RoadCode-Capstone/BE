@@ -1,5 +1,7 @@
 package com.capstone2025.roadcode.service;
 
+import com.capstone2025.roadcode.dto.MemberPointRank;
+import com.capstone2025.roadcode.dto.MemberPointRanking;
 import com.capstone2025.roadcode.dto.PointHistoryByDateResponse;
 import com.capstone2025.roadcode.dto.PointHistoryByTypeResponse;
 import com.capstone2025.roadcode.entity.Member;
@@ -16,8 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +71,46 @@ public class PointService {
 
             List<Point> points = pointRepository.findAllByMemberIdAndCreatedAtBetween(member.getId(), startDate, endDate);
             return PointHistoryByTypeResponse.from(points);
+        } catch (DateTimeParseException e) {
+            throw new CustomException(ErrorCode.INVALID_DATE_FORMAT);
+        }
+    }
+
+    // 순위(랭킹) 조회
+    public MemberPointRanking getPointRanking(String email, String start, String end) {
+
+        Member member = memberService.findByEmail(email); // 로그인 사용자 가져오기
+
+        try{
+            LocalDateTime startDate = LocalDate.parse(start).atStartOfDay(); // 시작 날짜 00:00
+            LocalDateTime endDate = LocalDate.parse(end).plusDays(1).atStartOfDay(); // 끝 날짜 다음날 00:00
+
+            List<MemberPointRank> rankedList = pointRepository.findMemberPointRanking(startDate, endDate);
+
+            // 순위 계산
+            int rank = 1;
+            rankedList.get(0).setRank(1); // 첫번째 순위
+            for(int i = 1; i < rankedList.size(); i++){
+
+                MemberPointRank preRank = rankedList.get(i-1); // 앞 순위
+                MemberPointRank curRank = rankedList.get(i); // 현재 순위
+
+                // 앞 순위와 포인트가 같을 경우 순위 동일
+                if(preRank.getTotalPoint().equals(curRank.getTotalPoint())) {
+                    curRank.setRank(rank);
+                } else { // 동일하지 않은 경우, 인덱스+1 을 순위로 함
+                    rank = i + 1;
+                    rankedList.get(i).setRank(rank);
+                }
+            }
+
+            // 내 순위 가져오기
+            MemberPointRank myRank =
+                    rankedList.stream().filter(r -> r.getMemberId().equals(member.getId())).findFirst()
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+
+            return new MemberPointRanking(myRank.getRank(), rankedList);
         } catch (DateTimeParseException e) {
             throw new CustomException(ErrorCode.INVALID_DATE_FORMAT);
         }

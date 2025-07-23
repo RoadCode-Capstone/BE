@@ -8,13 +8,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MemberPointRankResponse {
+public class MemberPointRank {
 
     private Long memberId; // 사용자 아이디
     private String nickname; // 사용자 닉네임
     private Long totalPoint; // 총 포인트(특정 기간 동안의)
+    private int rank; // 순위
 
-    public MemberPointRankResponse(Long memberId, String nickname, Long totalPoint) {
+    public MemberPointRank(Long memberId, String nickname, Long totalPoint) {
         this.memberId = memberId;
         this.nickname = nickname;
         this.totalPoint = totalPoint;
