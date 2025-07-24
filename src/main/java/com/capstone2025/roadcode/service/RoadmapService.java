@@ -42,7 +42,14 @@ public class RoadmapService {
                 roadmapProblem.getId(), roadmapProblem.getProblem().getId(), roadmapProblem.getSequence(), roadmapProblem.getStatus());
 
         return new RoadmapInfoResponse(
-                roadmap.getId(), roadmap.getTitle(), roadmap.getType(), roadmap.getLanguage().toString(), roadmap.getAlgorithm(), currentProblem);
+                roadmap.getId(),
+                roadmap.getTitle(),
+                roadmap.getType(),
+                roadmap.getLanguage().toString(),
+                roadmap.getAlgorithm(),
+                currentProblem,
+                roadmap.getLevelTestResult(),
+                roadmap.getDailyGoal());
     }
 
     // 로드맵 문제 목록 조회
@@ -69,6 +76,8 @@ public class RoadmapService {
         RoadmapType type =  RoadmapType.fromString(request.getType());
         LanguageType language = LanguageType.fromString(request.getLanguage());
         String algorithm = request.getAlgorithm();
+        int dailyGoal = request.getDailyGoal();
+        int levelTestResult = request.getLevelTestResult();
 
         List<Long> problemIds = aiService.createRoadmap(
                 type,
@@ -81,7 +90,7 @@ public class RoadmapService {
 
         String roadmapName = createRoadmapName(type, language, algorithm);
         Roadmap roadmap = Roadmap.create(
-                member, roadmapName, type, language, algorithm);
+                member, roadmapName, type, language, algorithm, dailyGoal, levelTestResult);
 
 
         roadmapRepository.save(roadmap);

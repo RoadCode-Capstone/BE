@@ -16,5 +16,7 @@ public class RoadmapInfoResponse {
     private String language;
     private String algorithm;
     private RoadmapProblemResponse currentProblem;
+    private int levelTestResult;
+    private int dailyGoal;
 
 }

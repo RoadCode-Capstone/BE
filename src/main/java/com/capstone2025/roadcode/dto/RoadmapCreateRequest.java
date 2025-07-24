@@ -7,6 +7,6 @@ public class RoadmapCreateRequest {
     private String type;
     private String language;
     private String algorithm;
-    private int dailyGoal;
     private int levelTestResult;
+    private int dailyGoal;
 }

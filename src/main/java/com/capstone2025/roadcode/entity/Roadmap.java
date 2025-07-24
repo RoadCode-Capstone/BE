@@ -35,6 +35,10 @@ public class Roadmap extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RoadmapStatus status;
 
+    private int levelTestResult; // 레벨 테스트 결과 (문제 난이도 범위와 동일)
+
+    private int dailyGoal; // 일일 학습 목표 (문제 개수)
+
 //    @ManyToOne
 //    @JoinColumn(name = "last_solved_problem_id", nullable = true)
 //    private Problem problem; // 마지막으로 푼 문제 id
@@ -43,15 +47,17 @@ public class Roadmap extends BaseEntity {
     private List<RoadmapProblem> roadmapProblems = new ArrayList<>();
 
     @Builder
-    private Roadmap(Member member, String title, RoadmapType type, LanguageType language, String algorithm, RoadmapStatus status) {
+    private Roadmap(Member member, String title, RoadmapType type, LanguageType language, String algorithm, RoadmapStatus status, int levelTestResult, int dailyGoal) {
         this.member = member;
         this.title = title;
         this.type = type;
         this.language = language;
         this.algorithm = algorithm;
         this.status = status;
+        this.levelTestResult = levelTestResult;
+        this.dailyGoal = dailyGoal;
     }
-    public static Roadmap create(Member member, String title, RoadmapType type, LanguageType language, String algorithm) {
+    public static Roadmap create(Member member, String title, RoadmapType type, LanguageType language, String algorithm, int levelTestResult, int dailyGoal) {
         return Roadmap.builder()
                 .member(member)
                 .title(title)
@@ -59,6 +65,8 @@ public class Roadmap extends BaseEntity {
                 .language(language)
                 .algorithm(algorithm)
                 .status(RoadmapStatus.IN_PROGRESS)
+                .levelTestResult(levelTestResult)
+                .dailyGoal(dailyGoal)
                 .build();
     }
 }
