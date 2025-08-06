@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -117,16 +118,18 @@ public class RoadmapService {
                 + " " + language.toString() + " 로드맵";
     }
 
-    public RoadmapListResponse getRoadmaps(String email) {
+    // 로드맵 목록 조회
+    public RoadmapListResponse getRoadmaps(String email, RoadmapStatus status) {
         Member member = memberService.findByEmail(email);
-
-        List<RoadmapResponse> roadmaps = roadmapRepository.findByMember(member).stream()
+        List<RoadmapResponse> roadmaps = roadmapRepository.findRoadmapsByMemberAndStatus(member, status)
+                .stream()
                 .map(RoadmapResponse::from)
                 .collect(Collectors.toList());
 
         return new RoadmapListResponse(roadmaps);
     }
 
+    // 로드맵 삭제 (시연)
     @Transactional
     public void deleteRoadmap(Long roadmapId, String email) {
 
@@ -137,6 +140,18 @@ public class RoadmapService {
         roadmapRepository.delete(roadmap);
     }
 
+    // 로드맵 포기
+    @Transactional
+    public void giveUpRoadmap(Long roadmapId, String email) {
+
+        Member member = memberService.findByEmail(email);
+        Roadmap roadmap = roadmapRepository.findById(roadmapId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ROADMAP_NOT_FOUND));
+        verifyRoadmapOwner(roadmap, member);
+        roadmap.giveUp();
+    }
+
+    // 로드맵 사용자 검증
     public void verifyRoadmapOwner(Roadmap roadmap, Member member) {
         if (roadmap.getMember().getId() != member.getId()) {
             throw new CustomException(ErrorCode.ROADMAP_ACCESS_DENIED);

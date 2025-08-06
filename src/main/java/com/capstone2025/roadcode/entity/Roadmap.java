@@ -2,6 +2,8 @@ package com.capstone2025.roadcode.entity;
 
 import com.capstone2025.roadcode.common.BaseEntity;
 import com.capstone2025.roadcode.common.LanguageType;
+import com.capstone2025.roadcode.exception.CustomException;
+import com.capstone2025.roadcode.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -68,5 +70,15 @@ public class Roadmap extends BaseEntity {
                 .levelTestResult(levelTestResult)
                 .dailyGoal(dailyGoal)
                 .build();
+    }
+
+    // 로드맵 포기(상태 변경)
+    public void giveUp() {
+
+        if (this.status == RoadmapStatus.COMPLETED){ // "이미 완료한 로드맵은 포기할 수 없습니다."
+            throw new CustomException(ErrorCode.FILE_WRITE_FAILED); // 예외처리 고쳐야함
+        }
+
+        this.status = RoadmapStatus.GAVE_UP;
     }
 }

@@ -2,6 +2,7 @@ package com.capstone2025.roadcode.controller;
 
 import com.capstone2025.roadcode.common.ApiResponse;
 import com.capstone2025.roadcode.dto.*;
+import com.capstone2025.roadcode.entity.RoadmapStatus;
 import com.capstone2025.roadcode.service.RoadmapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -26,10 +27,12 @@ public class RoadmapController {
 
     // 회원이 가진 로드맵 목록 조회
     @GetMapping("/my")
-    public ApiResponse<RoadmapListResponse> getRoadmaps(Authentication authentication) {
+    public ApiResponse<RoadmapListResponse> getRoadmaps(
+            Authentication authentication,
+            @RequestParam(value = "status", required = false) RoadmapStatus status) {
 
         String email = authentication.getName();
-        return ApiResponse.success(roadmapService.getRoadmaps(email));
+        return ApiResponse.success(roadmapService.getRoadmaps(email, status));
     }
 
     // 로드맵 정보 조회
@@ -52,10 +55,21 @@ public class RoadmapController {
     // 로드맵 삭제 (테스트/시연)
     @DeleteMapping("/{roadmapId}")
     public ApiResponse<Void> deleteRoadmap(@PathVariable Long roadmapId, Authentication authentication) {
+
         String email = authentication.getName();
         roadmapService.deleteRoadmap(roadmapId, email);
 
         return ApiResponse.successWithMessage("로드맵이 삭제되었습니다.");
+    }
+
+    // 로드맵 포기
+    @PostMapping("/{roadmapId}/give-up")
+    public ApiResponse<?> giveUpRoadmap(@PathVariable Long roadmapId, Authentication authentication) {
+
+        String email = authentication.getName();
+        roadmapService.giveUpRoadmap(roadmapId, email);
+
+        return ApiResponse.successWithMessage("로드맵 포기 상태로 변경");
     }
 
 
