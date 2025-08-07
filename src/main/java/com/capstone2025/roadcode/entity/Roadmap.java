@@ -77,6 +77,8 @@ public class Roadmap extends BaseEntity {
 
         if (this.status == RoadmapStatus.COMPLETED){
             throw new CustomException(ErrorCode.ROADMAP_ALREADY_COMPLETED);
+        } else if (this.status == RoadmapStatus.GAVE_UP){
+            throw new CustomException(ErrorCode.ROADMAP_ALREADY_GAVE_UP);
         }
 
         this.status = RoadmapStatus.GAVE_UP;
