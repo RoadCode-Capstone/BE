@@ -33,7 +33,8 @@ public enum ErrorCode {
     REVIEW_SELF_ACCESS_DENIED("E024", "자신의 풀이에는 리뷰를 달 수 없습니다.", HttpStatus.FORBIDDEN),
     REVIEW_NOT_FOUND("E025", "리뷰를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     INVALID_PARAMETER_GROUP_BY("E026", "요청 파라미터 형식이 잘못됐습니다. (groupBy = TYPE 또는 DATE)", HttpStatus.BAD_REQUEST),
-    INVALID_DATE_FORMAT("E027", "날짜 형식이 잘못됐습니다. (yyyy-MM-dd)", HttpStatus.BAD_REQUEST);
+    INVALID_DATE_FORMAT("E027", "날짜 형식이 잘못됐습니다. (yyyy-MM-dd)", HttpStatus.BAD_REQUEST),
+    ROADMAP_ALREADY_COMPLETED("E028", "이미 완료한 로드맵은 포기할 수 없습니다.", HttpStatus.CONFLICT); // 리소스의 현재 상태와의 충돌(409)
 
     private final String code;
     private final String message;

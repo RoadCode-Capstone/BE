@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Hidden
 @RestControllerAdvice
@@ -33,6 +34,16 @@ public class GlobalExceptionHandler {
                 .getAllErrors()
                 .get(0)
                 .getDefaultMessage();
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(errorMessage));
+    }
+
+    // 파라미터 타입 미스매치
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        String errorMessage = e.getMessage();
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

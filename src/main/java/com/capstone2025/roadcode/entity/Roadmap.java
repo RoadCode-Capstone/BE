@@ -75,8 +75,8 @@ public class Roadmap extends BaseEntity {
     // 로드맵 포기(상태 변경)
     public void giveUp() {
 
-        if (this.status == RoadmapStatus.COMPLETED){ // "이미 완료한 로드맵은 포기할 수 없습니다."
-            throw new CustomException(ErrorCode.FILE_WRITE_FAILED); // 예외처리 고쳐야함
+        if (this.status == RoadmapStatus.COMPLETED){
+            throw new CustomException(ErrorCode.ROADMAP_ALREADY_COMPLETED);
         }
 
         this.status = RoadmapStatus.GAVE_UP;
