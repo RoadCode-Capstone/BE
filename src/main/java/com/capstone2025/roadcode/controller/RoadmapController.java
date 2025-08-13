@@ -29,8 +29,7 @@ public class RoadmapController {
     @GetMapping("/my")
     public ApiResponse<RoadmapListResponse> getRoadmaps(
             Authentication authentication,
-            @RequestParam(value = "status", required = false) List<RoadmapStatus> statusList) {
-
+            @RequestParam(value = "statusList", required = false) List<RoadmapStatus> statusList) {
         String email = authentication.getName();
         return ApiResponse.success(roadmapService.getRoadmaps(email, statusList));
     }

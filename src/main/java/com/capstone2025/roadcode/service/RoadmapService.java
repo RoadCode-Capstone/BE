@@ -121,6 +121,11 @@ public class RoadmapService {
     // 로드맵 목록 조회
     public RoadmapListResponse getRoadmaps(String email, List<RoadmapStatus> statusList) {
         Member member = memberService.findByEmail(email);
+
+        if(statusList == null || statusList.isEmpty()) {
+            statusList = null;
+        }
+
         List<RoadmapResponse> roadmaps = roadmapRepository.findRoadmapsByMemberAndStatus(member, statusList)
                 .stream()
                 .map(RoadmapResponse::from)
