@@ -29,10 +29,10 @@ public class RoadmapController {
     @GetMapping("/my")
     public ApiResponse<RoadmapListResponse> getRoadmaps(
             Authentication authentication,
-            @RequestParam(value = "status", required = false) RoadmapStatus status) {
+            @RequestParam(value = "status", required = false) List<RoadmapStatus> statusList) {
 
         String email = authentication.getName();
-        return ApiResponse.success(roadmapService.getRoadmaps(email, status));
+        return ApiResponse.success(roadmapService.getRoadmaps(email, statusList));
     }
 
     // 로드맵 정보 조회
