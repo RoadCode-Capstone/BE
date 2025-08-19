@@ -31,6 +31,13 @@ public class SubmissionController {
         return ApiResponse.success(submissionService.submitLevelTest(email, request));
     }
 
+    // 풀이 상세 조회
+    @GetMapping("/submissions/{submissionId}")
+    public ApiResponse<SubmissionResponse> getSubmission(@PathVariable Long submissionId, Authentication authentication) {
+        String email = authentication.getName();
+        return ApiResponse.success(submissionService.getSubmission(email, submissionId));
+    }
+
 
 //    // 특정 사용자 풀이 조회
 //    @GetMapping()

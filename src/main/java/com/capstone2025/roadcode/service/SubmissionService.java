@@ -264,4 +264,8 @@ public class SubmissionService {
                 .orElseThrow(() -> new CustomException(ErrorCode.SUBMISSION_NOT_FOUND));
     }
 
+    public SubmissionResponse getSubmission(String email, Long submissionId) {
+        Submission submission = findById(submissionId);
+        return SubmissionResponse.from(submission);
+    }
 }
