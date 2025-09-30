@@ -4,6 +4,7 @@ import com.capstone2025.roadcode.common.ApiResponse;
 import com.capstone2025.roadcode.dto.CommentCreateRequest;
 import com.capstone2025.roadcode.dto.ReviewCreateRequest;
 import com.capstone2025.roadcode.dto.ReviewListResponse;
+import com.capstone2025.roadcode.service.OpenAIService;
 import com.capstone2025.roadcode.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -37,5 +38,12 @@ public class ReviewController {
 
         String email = authentication.getName();
         return ApiResponse.success(reviewService.getAllReviewsBySubmissionIdWithComments(email, submissionId));
+    }
+
+    @PostMapping("/submissions/{submissionId}/ai-reviews")
+    public ApiResponse<Void> createAIReview(@PathVariable Long submissionId) {
+
+        reviewService.createAICodeReview(submissionId);
+        return ApiResponse.successWithMessage("ai 리뷰 작성에 성공했습니다.");
     }
 }
