@@ -8,16 +8,17 @@ import com.capstone2025.roadcode.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class TagService {
 
     private final TagRepository tagRepository;
 
-    public AllTagsResponse getAllTagNames() {
-        return new AllTagsResponse(tagRepository.findAllTagNames());
+    private static final int PROBLEM_COUNT = 30;
+
+    // 문제 개수가 30개 이상인 태그 이름만 출력
+    public AllTagsResponse getTagNamesExceeds30() {
+        return new AllTagsResponse(tagRepository.findTagNamesWithProblemCount(PROBLEM_COUNT));
     }
 
     public Tag findByName(String algorithm) {

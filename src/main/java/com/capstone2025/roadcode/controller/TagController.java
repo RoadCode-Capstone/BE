@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/tags")
@@ -19,6 +17,6 @@ public class TagController {
 
     @GetMapping()
     public ApiResponse<AllTagsResponse> getAllTags() {
-        return ApiResponse.success(tagService.getAllTagNames());
+        return ApiResponse.success(tagService.getTagNamesExceeds30());
     }
 }

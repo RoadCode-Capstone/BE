@@ -91,6 +91,7 @@ public class ReviewService {
     }
 
     // 임시 함수. 문제 풀이 성공했을 시 이 함수를 코드에 넣으면 될듯?
+    @Transactional
     public void createAICodeReview(Long submissionId) {
         Submission submission = submissionService.findById(submissionId);
         String aiResponse = aiService.getAICodeReview(submission.getProblem(), submission.getSourceCode());
