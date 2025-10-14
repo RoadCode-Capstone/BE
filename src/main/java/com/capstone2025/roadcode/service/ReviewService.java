@@ -11,6 +11,7 @@ import com.capstone2025.roadcode.entity.Submission;
 import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
 import com.capstone2025.roadcode.repository.CommentRepository;
+import com.capstone2025.roadcode.repository.MemberRepository;
 import com.capstone2025.roadcode.repository.ReviewRepository;
 import com.mysql.cj.x.protobuf.MysqlxCursor;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,9 @@ public class ReviewService {
     private final CommentRepository commentRepository;
     private final SubmissionService submissionService;
     private final OpenAIService aiService;
+
+    private static final long AI_MEMBER_ID = 1L;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void createReview(String email, Long submissionId, ReviewCreateRequest reviewCreateRequest) {
@@ -96,8 +100,11 @@ public class ReviewService {
         Submission submission = submissionService.findById(submissionId);
         String aiResponse = aiService.getAICodeReview(submission.getProblem(), submission.getSourceCode());
 
+        // db 조회없이 ai 사용자의 프록시 객체를 가져옴 (select 쿼리 발생 x)
+        Member aiMember = memberRepository.getReferenceById(AI_MEMBER_ID);
+
         // 리뷰 저장
-        Review review = Review.create(submission, null, aiResponse);
+        Review review = Review.create(submission, aiMember, aiResponse);
         reviewRepository.save(review);
     }
 }
