@@ -40,7 +40,7 @@ public class RoadmapService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
 
         RoadmapProblemResponse currentProblem = new RoadmapProblemResponse(
-                roadmapProblem.getId(), roadmapProblem.getProblem().getId(), roadmapProblem.getOrder(), roadmapProblem.getStatus());
+                roadmapProblem.getId(), roadmapProblem.getProblem().getId(), roadmapProblem.getSequence(), roadmapProblem.getStatus());
 
         return new RoadmapInfoResponse(
                 roadmap.getId(),

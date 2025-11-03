@@ -24,16 +24,16 @@ public class RoadmapProblem extends CreatedOnlyEntity {
     @JoinColumn(name = "problem_id")
     private Problem problem;
 
-    private int order; // 로드맵 내에서 해당 문제 순서를 나타냄 , 0부터 시작
+    private int sequence; // 로드맵 내에서 해당 문제 순서를 나타냄 , 0부터 시작
 
     @Enumerated(value = EnumType.STRING)
     private RoadmapProblemStatus status;
 
-    public static RoadmapProblem create(Roadmap roadmap, Problem problem, int order, RoadmapProblemStatus status) {
+    public static RoadmapProblem create(Roadmap roadmap, Problem problem, int sequence, RoadmapProblemStatus status) {
         return RoadmapProblem.builder()
                 .roadmap(roadmap)
                 .problem(problem)
-                .order(order)
+                .sequence(sequence)
                 .status(status)
                 .build();
     }
