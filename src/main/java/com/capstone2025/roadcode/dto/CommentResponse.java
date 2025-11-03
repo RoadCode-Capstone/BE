@@ -14,6 +14,7 @@ import java.util.List;
 public class CommentResponse {
     private Long commentId;
     private Long memberId;
+    private String nickname;
     private String content;
     private LocalDateTime createdAt;
 
@@ -21,6 +22,7 @@ public class CommentResponse {
         return new CommentResponse(
                 comment.getId(),
                 comment.getMember().getId(),
+                comment.getMember().getNickname(),
                 comment.getContent(),
                 comment.getCreatedAt()
         );
