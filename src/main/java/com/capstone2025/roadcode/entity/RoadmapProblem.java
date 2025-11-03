@@ -16,7 +16,7 @@ public class RoadmapProblem extends CreatedOnlyEntity {
     @Column(name = "roadmap_problem_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roadmap_id")
     private Roadmap roadmap;
 
@@ -24,17 +24,28 @@ public class RoadmapProblem extends CreatedOnlyEntity {
     @JoinColumn(name = "problem_id")
     private Problem problem;
 
-    private int sequence; // 로드맵 내에서 해당 문제 순서를 나타냄 , 0부터 시작
+    private int order; // 로드맵 내에서 해당 문제 순서를 나타냄 , 0부터 시작
 
     @Enumerated(value = EnumType.STRING)
     private RoadmapProblemStatus status;
 
-    public static RoadmapProblem create(Roadmap roadmap, Problem problem, int sequence, RoadmapProblemStatus status) {
+    public static RoadmapProblem create(Roadmap roadmap, Problem problem, int order, RoadmapProblemStatus status) {
         return RoadmapProblem.builder()
                 .roadmap(roadmap)
                 .problem(problem)
-                .sequence(sequence)
+                .order(order)
                 .status(status)
                 .build();
     }
+
+    // 로드맵 문제 상태를 완료로 변경
+    public void complete() {
+        this.status = RoadmapProblemStatus.COMPLETED;
+    }
+
+    // 로드맵 문제 상태를 진행중으로 변경
+    public void startProgress() {
+        this.status = RoadmapProblemStatus.IN_PROGRESS;
+    }
+
 }

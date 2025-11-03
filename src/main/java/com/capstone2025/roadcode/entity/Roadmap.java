@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -46,6 +47,7 @@ public class Roadmap extends BaseEntity {
 //    private Problem problem; // 마지막으로 푼 문제 id
 
     @OneToMany(mappedBy = "roadmap") // order 기준으로 오름차순 정렬(수정 필요)
+    @OrderBy("order ASC")
     private List<RoadmapProblem> roadmapProblems = new ArrayList<>();
 
     @Builder
@@ -82,5 +84,20 @@ public class Roadmap extends BaseEntity {
         }
 
         this.status = RoadmapStatus.GAVE_UP;
+    }
+
+    // 로드맵 완료(상태 변경)
+    public void complete() {
+
+        this.status = RoadmapStatus.COMPLETED;
+    }
+
+    // 현재 문제 순서 기반으로 다음 문제 찾기
+    public Optional<RoadmapProblem> findNextProblem(RoadmapProblem currentProblem){
+        int currentOrder = currentProblem.getOrder();
+
+        return this.roadmapProblems.stream()
+                .filter(p -> p.getOrder() > currentOrder)
+                .findFirst(); // 현재 order 순서대로 정렬돼있는 상태
     }
 }

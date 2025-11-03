@@ -19,7 +19,7 @@ public class RoadmapProblemResponse {
         return new RoadmapProblemResponse(
                 rp.getId(),
                 rp.getProblem().getId(),
-                rp.getSequence(),
+                rp.getOrder(),
                 rp.getStatus()
         );
     }

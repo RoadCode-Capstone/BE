@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +40,7 @@ public class RoadmapService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
 
         RoadmapProblemResponse currentProblem = new RoadmapProblemResponse(
-                roadmapProblem.getId(), roadmapProblem.getProblem().getId(), roadmapProblem.getSequence(), roadmapProblem.getStatus());
+                roadmapProblem.getId(), roadmapProblem.getProblem().getId(), roadmapProblem.getOrder(), roadmapProblem.getStatus());
 
         return new RoadmapInfoResponse(
                 roadmap.getId(),
@@ -105,7 +105,9 @@ public class RoadmapService {
                     ? RoadmapProblemStatus.IN_PROGRESS
                     : RoadmapProblemStatus.NOT_STARTED;
 
-            RoadmapProblem roadmapProblem = RoadmapProblem.create(roadmap, problem, i, status);
+            // 중간에 문제 추가될 가능성을 고려하여 order은 10, 20, 30 이렇게 저장
+            // 중간에 문제가 추가될 경우 +1하여 저장
+            RoadmapProblem roadmapProblem = RoadmapProblem.create(roadmap, problem, i*10, status);
             roadmapProblemRepository.save(roadmapProblem);
         }
 
@@ -161,5 +163,31 @@ public class RoadmapService {
         if (roadmap.getMember().getId() != member.getId()) {
             throw new CustomException(ErrorCode.ROADMAP_ACCESS_DENIED);
         }
+    }
+
+    // 로드맵에서 다음 문제로 넘어가기
+    @Transactional
+    public void completeProblemAndAdvance(Long currentRoadmapProblemId) {
+
+        RoadmapProblem currentProblem = roadmapProblemRepository.findById(
+                        currentRoadmapProblemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+
+        Roadmap roadmap = currentProblem.getRoadmap();
+
+        // 1. 현재 문제 완료 상태로 변경
+        currentProblem.complete();
+
+        // 2-1. 다음 문제가 있을 경우, 진행 중으로 변경
+        Optional<RoadmapProblem> nextProblemOpt = roadmap.findNextProblem(currentProblem);
+        if(nextProblemOpt.isPresent()) {
+            RoadmapProblem nextProblem = nextProblemOpt.get();
+            nextProblem.startProgress();
+        } else { // 2-2. 다음 문제가 없을 경우, 로드맵 상태를 완료로 변경
+            roadmap.complete();
+        }
+
+
+
     }
 }
