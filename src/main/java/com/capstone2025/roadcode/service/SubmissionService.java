@@ -34,6 +34,7 @@ public class SubmissionService {
     private final ProblemRepository problemRepository;
     private final MemberService memberService;
     private final SubmissionRepository submissionRepository;
+    private final RoadmapService roadmapService;
 
     @Value("${spring.code.save-dir}") // 로컬 환경 path(서버로 변경하면 바꿔야함)
     private String codeSaveDir;
@@ -87,10 +88,9 @@ public class SubmissionService {
         submissionRepository.save(submission);
 
         // 6. 문제 풀이에 성공한 경우 로드맵 다음 문제로 수정
-        // 현재 문제의 RoadmapProblemStatus 를 COMPLETE로 수정
-        // 그 다음 문제를 IN_PROGRESS로 만듦
-        // 만약 그 다음 문제가 없을 경우, 로드맵 상태를 SUCCESS로 변경
-        // -> roadmapService에 다음 문제로 넘어가는 함수 생성해서 위 로직 전부 넣기.
+        if(request.getRoadmapId()!= null && allPassed){
+            roadmapService.completeProblemAndAdvance(request.getRoadmapProblemId());
+        }
 
         // 7. 전체 결과를 응답에 추가
         return new SubmitSolutionResponse(allPassed, testcaseResults);
