@@ -22,6 +22,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -265,13 +268,33 @@ public class SubmissionService {
         }
     }
 
+    // 특정 풀이 아이디로 조회
     public Submission findById(Long submissionId) {
         return submissionRepository.findById(submissionId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SUBMISSION_NOT_FOUND));
     }
 
+    // 특정 풀이 조회 후 반환
     public SubmissionResponse getSubmission(String email, Long submissionId) {
         Submission submission = findById(submissionId);
         return SubmissionResponse.from(submission);
     }
+
+    // 사용자 문제 풀이 목록 조회
+    public SubmissionHistoryResponse getSubmissions(String email, String start, String end, Boolean isSuccess) {
+        Member member = memberService.findByEmail(email); // 로그인 사용자 가져오기
+        Long memberId = member.getId();
+
+        try{
+            LocalDateTime startDate = LocalDate.parse(start).atStartOfDay(); // 시작 날짜 00:00
+            LocalDateTime endDate = LocalDate.parse(end).plusDays(1).atStartOfDay(); // 끝 날짜 다음날 00:00
+
+            List<Submission> submissions = submissionRepository.findSubmissions(memberId, isSuccess, startDate, endDate);
+
+            return SubmissionHistoryResponse.from(submissions);
+        } catch (DateTimeParseException e) {
+            throw new CustomException(ErrorCode.INVALID_DATE_FORMAT);
+        }
+    }
+
 }

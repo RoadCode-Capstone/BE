@@ -52,12 +52,18 @@ public class SubmissionController {
         String email = authentication.getName();
         return ApiResponse.success(submissionService.getOtherSuccessfulSubmissions(email, problemId));
     }
-//
-//    // 내가 푼 풀이 목록 조회
-//    @GetMapping()
-//    public ApiResponse<?> getMySolutions() {
-//        return ApiResponse.successWithMessage("");
-//    }
+
+    // 내가 푼 풀이 목록 조회
+    @GetMapping("/submissions/my")
+    public ApiResponse<?> getMySolutions(
+            Authentication authentication,
+            @RequestParam String start,
+            @RequestParam String end,
+            @RequestParam(required = false) Boolean isSuccess) {
+        String email = authentication.getName();
+
+        return ApiResponse.success(submissionService.getSubmissions(email, start, end, isSuccess));
+    }
 //
 //    // 내가 푼 문제 목록 조회
 //    @GetMapping()
