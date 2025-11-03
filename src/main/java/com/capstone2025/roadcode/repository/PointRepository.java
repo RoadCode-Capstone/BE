@@ -52,7 +52,7 @@ public interface PointRepository extends JpaRepository<Point, Long> {
         )
         FROM Member m
         LEFT JOIN Point p ON m.id = p.member.id AND p.createdAt >= :startDate AND p.createdAt < :endDate
-        WHERE m.member_id != 1 
+        WHERE m.id != 1 
         GROUP BY m.id, m.nickname
         ORDER BY COALESCE(SUM(p.amount), 0) DESC
     """)
