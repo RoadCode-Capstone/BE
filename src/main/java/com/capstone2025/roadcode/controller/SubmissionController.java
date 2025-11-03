@@ -54,7 +54,7 @@ public class SubmissionController {
     }
 
     // 내가 푼 풀이 목록 조회
-    @GetMapping("/submissions/my")
+    @GetMapping("/submissions")
     public ApiResponse<?> getMySolutions(
             Authentication authentication,
             @RequestParam String start,
