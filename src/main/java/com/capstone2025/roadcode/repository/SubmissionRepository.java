@@ -27,8 +27,8 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
      */
     @Query("SELECT s FROM Submission s " +
             "WHERE s.member.id = :memberId " +
-            "AND (s.created_at BETWEEN :startDate AND :endDate) " +
-            "AND (:isSuccess IS NULL OR s.is_success = :isSuccess)")
+            "AND (s.createdAt BETWEEN :startDate AND :endDate) " +
+            "AND (:isSuccess IS NULL OR s.isSuccess = :isSuccess)")
     List<Submission> findSubmissions(
             Long memberId,
             Boolean isSuccess,
