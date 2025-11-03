@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +16,7 @@ public class ReviewWithCommentsResponse {
 
     private Long reviewId;
     private Long memberId;
+    private String nickname;
     private String content;
     private List<CommentResponse> comments;
     private LocalDateTime createdAt;
@@ -30,6 +30,7 @@ public class ReviewWithCommentsResponse {
         return new ReviewWithCommentsResponse(
                 review.getId(),
                 review.getMember().getId(),
+                review.getMember().getNickname(),
                 review.getContent(),
                 comments,
                 review.getCreatedAt()
