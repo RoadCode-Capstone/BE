@@ -17,7 +17,13 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
     List<Roadmap> findByMember(Member member);
 
     // 사용자가 가지고 있는 로드맵 목록 조회(status 필터링)
-    @Query("SELECT r FROM Roadmap r WHERE r.member = :member AND (:statusList IS NULL OR r.status IN :statusList)")
+    @Query("SELECT r FROM Roadmap r WHERE r.member = :member AND (:statusList IS NULL OR r.status IN :statusList) " +
+            "ORDER BY CASE r.status " +
+            "WHEN 'IN_PROGRESS' THEN 1 " + // 진행중인 로드맵 1순위
+            "WHEN 'COMPLETED' THEN 2 " +   // 완료 로드맵 2순위
+            "WHEN 'GAVE_UP' THEN 3 " +     // 포기 로드맵 3순위
+            "ELSE 4 " +
+            "END ASC")
     List<Roadmap> findRoadmapsByMemberAndStatus(
             @Param("member") Member member, @Param("statusList") List<RoadmapStatus> statusList);
 }
