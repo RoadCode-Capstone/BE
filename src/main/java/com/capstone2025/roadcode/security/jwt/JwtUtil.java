@@ -15,8 +15,8 @@ public class JwtUtil {
     // 시크릿 키 (32 바이트 이상 필요)
     private final SecretKey key = Jwts.SIG.HS256.key().build(); //or HS384.key() or HS512.key()
 
-    // 토큰 유효 시간(30분)
-    private final long EXPIRATION_TIME = 1000 * 60 * 30;
+    // 토큰 유효 시간(24시간)
+    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 1000ms * 60초 * 60분 * 24시간 -> 하루
 
     // 토큰 생성
 //    public String createToken(String username) {
