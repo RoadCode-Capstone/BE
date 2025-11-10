@@ -96,7 +96,7 @@ public class RoadmapService {
 
         String roadmapName = createRoadmapName(type, language, algorithm);
         Roadmap roadmap = Roadmap.create(
-                member, roadmapName, type, language, algorithm, dailyGoal, levelTestResult);
+                member, roadmapName, type, language, algorithm, levelTestResult, dailyGoal);
 
 
         roadmapRepository.save(roadmap);
@@ -264,11 +264,11 @@ public class RoadmapService {
 
         log.info("추가할 문제 수: {}", recommendProblems.size());
 
-        int index = 0; // recommendProblems의 인덱스
+        int index = 1;
         for(Problem problem: recommendProblems) {
 
             // 첫번째 문제는 "IN_PROGRESS"
-            RoadmapProblemStatus status = (index == 0)
+            RoadmapProblemStatus status = (index == 1)
                     ? RoadmapProblemStatus.IN_PROGRESS
                     : RoadmapProblemStatus.NOT_STARTED;
 
