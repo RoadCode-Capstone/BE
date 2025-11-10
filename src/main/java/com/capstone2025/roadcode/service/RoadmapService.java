@@ -250,7 +250,7 @@ public class RoadmapService {
         } else if(roadmap.getType() == RoadmapType.Language) {
             // 추천 문제 가져오기
             recommendProblems = problemService.getRecommendProblems(
-                    roadmapProblemIds, type, 0, rating, dailyGoal
+                    roadmapProblemIds, type, 0L, rating, dailyGoal
             );
         }
 
