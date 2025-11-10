@@ -86,8 +86,8 @@ public class RoadmapController {
 
     // 로드맵 문제 추가(추천 문제)
     // roadmapId, authentication
-    @PostMapping("/{roadmapId}/recommend-problem")
-    public ApiResponse<RoadmapInfoResponse> addConceptProblem(@PathVariable Long roadmapId,
+    @PostMapping("/{roadmapId}/recommend-problems")
+    public ApiResponse<RoadmapInfoResponse> addRecommendProblem(@PathVariable Long roadmapId,
                                                               Authentication authentication) {
 
         String email = authentication.getName();

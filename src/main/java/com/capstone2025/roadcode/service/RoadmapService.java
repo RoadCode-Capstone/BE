@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -235,15 +236,25 @@ public class RoadmapService {
                 .map(rp -> rp.getProblem().getId())
                 .toList();
         RoadmapType type = roadmap.getType();
-
-        Long tagId = tagService.findByName(roadmap.getAlgorithm()).getId();
         int rating = roadmap.getLevelTestResult();
         int dailyGoal = roadmap.getDailyGoal();
 
-        // 추천 문제 가져오기
-        List<Problem> recommendProblems = problemService.getRecommendProblems(
-                roadmapProblemIds, type, tagId, rating, dailyGoal
-        );
+        List<Problem> recommendProblems = new ArrayList<>();
+
+        if(roadmap.getType() == RoadmapType.Algorithm){
+            Long tagId = tagService.findByName(roadmap.getAlgorithm()).getId();
+            // 추천 문제 가져오기
+            recommendProblems = problemService.getRecommendProblems(
+                    roadmapProblemIds, type, tagId, rating, dailyGoal
+            );
+        } else if(roadmap.getType() == RoadmapType.Language) {
+            // 추천 문제 가져오기
+            recommendProblems = problemService.getRecommendProblems(
+                    roadmapProblemIds, type, 0, rating, dailyGoal
+            );
+        }
+
+
 
         // 로드맵 마지막 문제 뒤에 새로운 문제 추가하기
         List<RoadmapProblem> sortedProblems = roadmap.getRoadmapProblems();
