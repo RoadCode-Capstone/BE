@@ -19,6 +19,7 @@ import okhttp3.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -406,9 +407,156 @@ public class OpenAIService {
                         "\nCode=" + code;
 
         String response = createAIResponse(rule, prompt);
+        log.info("<<AI 코드 리뷰>>");
         log.info(response);
 
         return response;
     }
+
+    // new 코드
+
+
+    /*  리뷰 유효성 검사 함수(작성한 리뷰, 문제 내용, 코드 내용) */
+    public Boolean isValidReview(String review, String description, String code) {
+        String rule =
+                "You are a strict code review validator.\n" +
+                        "Decide if the given review is relevant to the provided problem and code.\n" +
+                        "Rules:\n" +
+                        "- If the review discusses code, logic, performance, readability, structure, or naming → valid: true.\n" +
+                        "- Ignore factual errors (e.g., wrong complexity still true).\n" +
+                        "- If off-topic, nonsense, or unrelated (e.g., jokes, chatting) → valid: false with short Korean reason.\n" +
+                        "Output JSON only:\n" +
+                        "{\"valid\": true}\n" +
+                        "or\n" +
+                        "{\"valid\": false, \"reason\": \"<이유>\"}";
+
+
+        String prompt =
+                "Problem=\n" + description +
+                        "\nCode=\n" + code +
+                        "\nReview=\n" + review;
+
+        String response = createAIResponse(rule, prompt).toLowerCase();
+        log.info("<<리뷰 유효성 검사(AI)>>");
+        log.info(response);
+
+        // 결과 파싱 (true / false)
+        if (response.contains("true")) {
+            return true;
+        } else if (response.contains("false")) {
+            return false;
+        } else {
+            System.err.println("AI 응답이 예기치 않은 형식입니다: " + response);
+            return false;
+        }
+    }
+
+    /* 답글 유효성 검사 함수(답글을 달 리뷰, 작성한 답글) */
+    public Boolean isValidComment(String review, String comment) {
+        String rule =
+                "You are a strict reply validator.\n" +
+                        "Given a review and its reply, decide if the reply is relevant and appropriate as a response.\n" +
+                        "Rules:\n" +
+                        "- If the reply responds to, asks about, or disagrees with the review’s content (code, logic, performance, readability, etc.) → valid: true.\n" +
+                        "- Ignore correctness.\n" +
+                        "- If off-topic, rude, meaningless, or chatting → valid: false with short Korean reason.\n" +
+                        "Output only JSON:\n" +
+                        "{\"valid\": true}\n" +
+                        "or\n" +
+                        "{\"valid\": false, \"reason\": \"<이유>\"}";
+
+        String prompt =
+                "Review=\n" + review +
+                        "\nComment=\n" + comment;
+
+        String response = createAIResponse(rule, prompt).toLowerCase();
+        log.info("<<답글 유효성 검사(AI)>>");
+        log.info(response);
+
+        // 결과 파싱 (true / false)
+        if (response.contains("true")) {
+            return true;
+        } else if (response.contains("false")) {
+            return false;
+        } else {
+            System.err.println("AI 응답이 예기치 않은 형식입니다: " + response);
+            return false;
+        }
+    }
+
+//    /* 추가 문제 추천 함수(현재 로드맵 문제 아이디 목록, 현재 로드맵 알고리즘 종류, 현재 진행중인 문제 난이도, 일일 학습 목표) */
+//    public List<Problem> getAdditionalProblems(List<Long> problemIds, RoadmapType type, Long tagId, int rating, int dailyGoal) {
+////        /*
+////        언어 유형(algorithm == null)이면 problemIds에 없는 문제이면서 rating과 같거나 높은 난이도를 가지는(같은 문제 우선) 문제를 dailyGoal개 뽑아 리턴
+////        알고리즘 유형(algorithm != null)이면 problemIds에 없는 문제이면서 algorithm을 tag로 가지고 rating과 같거나 높은 난이도를 가지는(같은 문제 우선) 문제를 dailyGoal개 뽑아 리턴
+////
+////        TODO: 문제 추가할 때 현재 문제에서 뒷 순서로 추가해야하고, 난이도 순서대로 정렬 해주세요!!!
+////         */
+////
+////        // 전체 문제 목록 조회
+////        List<Problem> problems = problemService.getProblemsByRoadmapTypeAndAlgorithm(type, algorithm);
+////
+////        Stream<Problem> stream = problems.stream()
+////                .filter(p -> !problemIds.contains(p.getId()))    // 현재 로드맵에 없는 문제
+////                .filter(p -> p.getRating() >= rating);           // 현재 문제와 난이도가 같거나 높음
+////
+////        List<Problem> candidates = stream
+////                .sorted(Comparator
+////                        .comparingInt((Problem p) -> Math.abs(p.getRating() - rating))   // 같은 난이도 우선
+////                        .thenComparingInt(p -> p.rating))                           // 그다음 난이도 오름차순
+////                .limit(dailyGoal)                                                   // 일일 학습 목표 개수만큼 뽑음
+////                .collect(Collectors.toList());
+//
+//        // 조건에 맞는 문제 조회
+//        List<Problem> problems =  new ArrayList<>();
+//        if(type == RoadmapType.Algorithm){
+//            problems = problemService.getAlgorithmAdditionalProblems(tagId, problemIds, rating, dailyGoal);
+//        } else if (type == RoadmapType.Language) {
+//            problems = problemService.getLanguageAdditionalProblems(problemIds, rating, dailyGoal);
+//        } else {
+//            return null; // 오류?
+//        }
+//
+//        if (problems.isEmpty()) { // 조건에 맞는 문제 없음
+//            log.info("조건에 맞는 문제 없음"); // 출력 변경해도 상관 없음
+//            // 응답 메시지 담아서 보내야하나;;..
+//            return null;
+//        }
+//
+//        return problems;
+//    }
+
+//    /* 개념 강화 문제 추천 함수(현재 로드맵 문제 아이디 목록, 현재 문제 태그 목록, 현재 문제 난이도) */
+//    public static Problem recommendProblem(List<Integer> problemIds, int curProblemId) {
+//        List<Problem> problems = getProblems(); // 전체 문제 목록 조회
+//
+//        List<Problem> fullMatch = problems.stream()
+//                .filter(p -> p.tags != null && p.tags.containsAll(tags))    // 모든 태그 일치
+//                .filter(p -> !problemIds.contains(p.id))                    // 현재 로드맵에 없는 문제
+//                .filter(p -> p.rating < rating)                             // 현재 문제보다 난이도 낮음
+//                .collect(Collectors.toList());
+//
+//        List<Problem> partialMatch = problems.stream()
+//                .filter(p -> p.tags != null && p.tags.stream().anyMatch(tags::contains))    // 태그 하나라도 일치
+//                .filter(p -> !problemIds.contains(p.id))                                    // 현재 로드맵에 없는 문제
+//                .filter(p -> p.rating < rating)                                             // 현재 문제보다 난이도 낮음
+//                .collect(Collectors.toList());
+//
+//        List<Problem> candidates = !fullMatch.isEmpty() ? fullMatch : partialMatch; // 모든 태그 일치가 있으면 우선, 없으면 부분 일치
+//
+//        if (candidates.isEmpty()) { // 조건에 맞는 문제 없음
+//            System.out.println("조건에 맞는 문제 없음"); // 출력 변경해도 상관 없음
+//            return null;
+//        }
+//
+//        candidates.sort((a, b) -> Integer.compare(b.rating, a.rating)); // 난이도 기준 내림차순 정렬
+//
+//        Problem recommended = candidates.get(0);    // 현재보다 조금 낮은 문제를 개념 강화 문제로 추천
+//
+//        // TEST 결과 출력 (없어도 됨)
+//        System.out.println("추천 문제: " + recommended.id + "\n" + recommended.name + " (" + recommended.rating + ", " + recommended.tags + ")");
+//
+//        return recommended;
+//    }
 
 }

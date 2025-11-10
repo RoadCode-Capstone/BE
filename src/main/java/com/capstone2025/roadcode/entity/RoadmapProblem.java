@@ -48,4 +48,9 @@ public class RoadmapProblem extends CreatedOnlyEntity {
         this.status = RoadmapProblemStatus.IN_PROGRESS;
     }
 
+    // 로드맵 문제 상태를 시작 전으로 변경
+    public void init() {
+        this.status = RoadmapProblemStatus.NOT_STARTED;
+    }
+
 }

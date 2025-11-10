@@ -25,6 +25,8 @@ public class RoadmapService {
     private final ProblemRepository problemRepository;
     private final OpenAIService aiService;
     private final MemberService memberService;
+    private final ProblemService problemService;
+    private final TagService tagService;
 
     // 로드맵 정보 조회(현재 진행중인 문제도 함께 줌)
     public RoadmapInfoResponse getRoadmapInfo(String email, Long roadmapId) {
@@ -190,4 +192,114 @@ public class RoadmapService {
 
 
     }
+
+    // 로드맵에 개념 강화 문제 추가
+    @Transactional
+    public void addConceptProblem(Long roadmapId, String email, AddConceptProblemRequest request) {
+        Member member = memberService.findByEmail(email);
+        Roadmap roadmap = roadmapRepository.findById(roadmapId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ROADMAP_NOT_FOUND));
+        verifyRoadmapOwner(roadmap, member);
+
+        Long currentProblemId = request.getCurrentProblemId(); // 현재 문제 가져오기
+        List<Long> roadmapProblemIds = roadmap.getRoadmapProblems().stream()
+                        .map(rp -> rp.getProblem().getId())
+                                .toList();
+        Optional<Problem> conceptProblem = problemService.getConceptProblem(currentProblemId, roadmapProblemIds);
+
+        if(conceptProblem.isPresent()) {
+            // 현재 진행중인 문제 sequence 가져오기
+            int currentSequence = getCurrentProblemSequence(roadmapId);
+
+            // 현재 진행중인 문제는 NOT_STARTED로 바꾸기
+            resetCurrentProblemToNotStart(roadmapId);
+
+            // 로드맵에 문제 추가
+            RoadmapProblem roadmapProblem = RoadmapProblem.create(
+                    roadmap, conceptProblem.get(), currentSequence-1, RoadmapProblemStatus.IN_PROGRESS);
+            roadmapProblemRepository.save(roadmapProblem);
+        } else {
+            // 없을 때 오류 날리기
+        }
+    }
+
+    // 로드맵에 추천 문제 추가
+    @Transactional
+    public void addRecommendProblems(Long roadmapId, String email) {
+        Member member = memberService.findByEmail(email);
+        Roadmap roadmap = roadmapRepository.findById(roadmapId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ROADMAP_NOT_FOUND));
+        verifyRoadmapOwner(roadmap, member);
+
+        List<Long> roadmapProblemIds = roadmap.getRoadmapProblems().stream()
+                .map(rp -> rp.getProblem().getId())
+                .toList();
+        RoadmapType type = roadmap.getType();
+
+        Long tagId = tagService.findByName(roadmap.getAlgorithm()).getId();
+        int rating = roadmap.getLevelTestResult();
+        int dailyGoal = roadmap.getDailyGoal();
+
+        // 추천 문제 가져오기
+        List<Problem> recommendProblems = problemService.getRecommendProblems(
+                roadmapProblemIds, type, tagId, rating, dailyGoal
+        );
+
+        // 로드맵 마지막 문제 뒤에 새로운 문제 추가하기
+        List<RoadmapProblem> sortedProblems = roadmap.getRoadmapProblems();
+        int lastIndex = sortedProblems.get(sortedProblems.size() - 1).getSequence();
+
+        int index = 0; // recommendProblems의 인덱스
+        for(Problem problem: recommendProblems) {
+
+            // 첫번째 문제는 "IN_PROGRESS"
+            RoadmapProblemStatus status = (index == 0)
+                    ? RoadmapProblemStatus.IN_PROGRESS
+                    : RoadmapProblemStatus.NOT_STARTED;
+
+            RoadmapProblem roadmapProblem = RoadmapProblem.create(roadmap, problem, lastIndex + index, status);
+            roadmapProblemRepository.save(roadmapProblem);
+
+            index++;
+        }
+    }
+
+    /**
+     * 로드맵에서 현재 진행 중인 문제의 순서(sequence)를 반환합니다.
+     *
+     * @param roadmapId 로드맵 ID
+     * @return 현재 진행 중인 문제의 sequence
+     */
+    public int getCurrentProblemSequence(Long roadmapId) {
+
+        RoadmapProblem currentProblem = findInProgressProblem(roadmapId);
+        return currentProblem.getSequence();
+    }
+
+    /**
+     * 로드맵에서 현재 진행 중인 문제를 NOT_START 상태로 변경합니다.
+     *
+     * @param roadmapId 로드맵 ID
+     */
+    @Transactional
+    public void resetCurrentProblemToNotStart(Long roadmapId) {
+
+        RoadmapProblem currentProblem = findInProgressProblem(roadmapId);
+
+        // 엔티티의 상태 변경 (JPA가 변경 감지 - Dirty Checking)
+        currentProblem.init();
+    }
+
+
+    /**
+     * 로드맵 ID로 현재 "진행 중(IN_PROGRESS)"인 RoadmapProblem 엔티티를 찾습니다.
+     *
+     * @param roadmapId 로드맵 ID
+     * @return RoadmapProblem 엔티티
+     */
+    private RoadmapProblem findInProgressProblem(Long roadmapId) {
+        return roadmapProblemRepository.findByRoadmapIdAndStatus(roadmapId, RoadmapProblemStatus.IN_PROGRESS)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+    }
+
 }

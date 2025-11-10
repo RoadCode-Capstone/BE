@@ -10,11 +10,17 @@ import com.capstone2025.roadcode.exception.ErrorCode;
 import com.capstone2025.roadcode.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,6 +68,7 @@ public class ProblemService {
                 .collect(Collectors.toList());
     }
 
+    // 로드맵 타입에 맞는 문제 목록 전체 가져오기
     public List<Problem> getProblemsByRoadmapTypeAndAlgorithm(RoadmapType type, String algorithm) {
 
         if (type == RoadmapType.Algorithm) {
@@ -74,5 +81,71 @@ public class ProblemService {
         } else {
             throw new CustomException(ErrorCode.INVALID_ROADMAP_TYPE);
         }
+    }
+
+    /**
+     * 추가 문제 추천 함수(현재 로드맵 문제 아이디 목록, 현재 로드맵 알고리즘 종류, 현재 진행중인 문제 난이도, 일일 학습 목표)
+     * */
+    public List<Problem> getRecommendProblems(List<Long> problemIds, RoadmapType type, Long tagId, int rating, int dailyGoal) {
+
+        // problemIds가 비어있으면 NOT IN () 쿼리 에러 발생
+        if (problemIds == null || problemIds.isEmpty()) {
+            log.warn("problemIds가 비어있어 추가 문제를 조회할 수 없습니다.");
+            return Collections.emptyList();
+        }
+
+        // Pageable 객체 생성 (limit = dailyGoal, sort = rating ASC)
+        Pageable pageable = PageRequest.of(0, dailyGoal, Sort.by(Sort.Direction.ASC, "rating"));
+
+        // 조건에 맞는 문제 조회
+        Page<Problem> problemPage;
+        if(type == RoadmapType.Algorithm){
+
+            problemPage = problemRepository.findAlgorithmProblems(
+                    tagId, problemIds, rating, pageable
+            );
+        } else if (type == RoadmapType.Language) {
+
+            problemPage = problemRepository.findByIdNotInAndRatingGreaterThanEqual(
+                    problemIds, rating, pageable
+            );
+
+        } else {
+            return null; // 로드맵 타입 오류? 근데 이건 사전에 방지하는데..
+        }
+
+        if (problemPage.isEmpty()) { // 조건에 맞는 문제 없음
+            log.info("조건에 맞는 문제 없음"); // 출력 변경해도 상관 없음
+            // 응답 메시지 담아서 보내야하나..
+            return null;
+        }
+
+        return problemPage.getContent();
+    }
+
+    /**
+     * 개념 강화 문제 1개 추천 받기
+     */
+    public Optional<Problem> getConceptProblem(Long currentProblemId, List<Long> roadmapProblemIds) {
+
+        Problem currentProblem = problemRepository.findById(currentProblemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND)); // 문제 아이디로 문제 찾기
+        int currentRating = currentProblem.getRating(); // 현재 문제 난이도 가져오기
+
+        List<Long> currentTagIds = currentProblem.getProblemTags().stream()
+                .map(problemTag -> problemTag.getTag().getId())
+                .collect(Collectors.toList());
+
+        // 후보 문제 가져오기
+        List<Problem> candidates = problemRepository.findReinforcementProblem(
+                roadmapProblemIds, currentTagIds, currentRating
+        );
+
+        // 목록 가장 위에 있는 추천 문제 가져오기
+        if(candidates.isEmpty()) {
+            log.info("조건에 맞는 추천 문제 없음"); // 메시지 남겨야하나?
+        }
+
+        return candidates.stream().findFirst();
     }
 }

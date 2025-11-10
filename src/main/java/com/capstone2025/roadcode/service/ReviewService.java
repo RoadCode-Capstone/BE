@@ -50,9 +50,15 @@ public class ReviewService {
         }
 
         // AI 리뷰 검사
+        String reviewContent = reviewCreateRequest.getContent(); // 리뷰 내용
+        String problemDescription = submission.getProblem().getDescription(); // 문제 설명
+        String sourceCode = submission.getSourceCode(); // 문제 풀이 코드
+        if(!aiService.isValidReview(reviewContent, problemDescription, sourceCode)){
+            throw new CustomException(ErrorCode.INVALID_REVIEW);
+        }
 
         // 리뷰 저장
-        Review review = Review.create(submission, member, reviewCreateRequest.getContent());
+        Review review = Review.create(submission, member, reviewContent);
         reviewRepository.save(review);
     }
 
@@ -68,6 +74,11 @@ public class ReviewService {
         submissionService.validateSolvedProblem(memberId, problemId);
 
         // AI 답글 검사
+        String reviewContent = review.getContent(); // 리뷰 내용
+        String commentContent = commentCreateRequest.getContent(); // 답글 내용
+        if(!aiService.isValidComment(reviewContent, commentContent)){
+            throw new CustomException(ErrorCode.INVALID_COMMENT);
+        }
 
         // 답글 저장
         Comment comment = Comment.create(review, member, commentCreateRequest.getContent());

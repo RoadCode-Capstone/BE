@@ -71,5 +71,31 @@ public class RoadmapController {
         return ApiResponse.successWithMessage("로드맵 포기 상태로 변경");
     }
 
+    // 로드맵 문제 추가(개념 강화 문제)
+    // roadmapId, currentProblemId, authentication
+    @PostMapping("/{roadmapId}/concept-problem")
+    public ApiResponse<RoadmapInfoResponse> addConceptProblem(@PathVariable Long roadmapId,
+                                            Authentication authentication,
+                                            @RequestBody AddConceptProblemRequest request) {
+
+        String email = authentication.getName();
+        roadmapService.addConceptProblem(roadmapId, email, request);
+
+        return ApiResponse.success(roadmapService.getRoadmapInfo(email, roadmapId));
+    }
+
+    // 로드맵 문제 추가(추천 문제)
+    // roadmapId, authentication
+    @PostMapping("/{roadmapId}/concept-problem")
+    public ApiResponse<RoadmapInfoResponse> addConceptProblem(@PathVariable Long roadmapId,
+                                                              Authentication authentication) {
+
+        String email = authentication.getName();
+        roadmapService.addRecommendProblems(roadmapId, email);
+
+        return ApiResponse.success(roadmapService.getRoadmapInfo(email, roadmapId));
+    }
+
+
 
 }

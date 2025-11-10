@@ -35,7 +35,9 @@ public enum ErrorCode {
     INVALID_PARAMETER_GROUP_BY("E026", "요청 파라미터 형식이 잘못됐습니다. (groupBy = TYPE 또는 DATE)", HttpStatus.BAD_REQUEST),
     INVALID_DATE_FORMAT("E027", "날짜 형식이 잘못됐습니다. (yyyy-MM-dd)", HttpStatus.BAD_REQUEST),
     ROADMAP_ALREADY_COMPLETED("E028", "이미 완료한 로드맵은 포기할 수 없습니다.", HttpStatus.CONFLICT), // 리소스의 현재 상태와의 충돌(409)
-    ROADMAP_ALREADY_GAVE_UP("E029", "이미 포기한 로드맵입니다.", HttpStatus.CONFLICT);
+    ROADMAP_ALREADY_GAVE_UP("E029", "이미 포기한 로드맵입니다.", HttpStatus.CONFLICT),
+    INVALID_REVIEW("E030", "AI 리뷰 유효성 검사를 통과하지 못했습니다.", HttpStatus.BAD_REQUEST),
+    INVALID_COMMENT("E031", "AI 답글 유효성 검사를 통과하지 못했습니다.", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;

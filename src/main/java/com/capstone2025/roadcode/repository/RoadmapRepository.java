@@ -26,4 +26,5 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
             "END ASC")
     List<Roadmap> findRoadmapsByMemberAndStatus(
             @Param("member") Member member, @Param("statusList") List<RoadmapStatus> statusList);
+
 }
