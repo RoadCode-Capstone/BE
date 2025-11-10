@@ -9,6 +9,7 @@ import com.capstone2025.roadcode.repository.ProblemRepository;
 import com.capstone2025.roadcode.repository.RoadmapProblemRepository;
 import com.capstone2025.roadcode.repository.RoadmapRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RoadmapService {
@@ -243,22 +245,24 @@ public class RoadmapService {
 
         if(roadmap.getType() == RoadmapType.Algorithm){
             Long tagId = tagService.findByName(roadmap.getAlgorithm()).getId();
+            log.info("추천문제 : 알고리즘 타입");
             // 추천 문제 가져오기
             recommendProblems = problemService.getRecommendProblems(
                     roadmapProblemIds, type, tagId, rating, dailyGoal
             );
         } else if(roadmap.getType() == RoadmapType.Language) {
+            log.info("추천문제 : 언어 타입");
             // 추천 문제 가져오기
             recommendProblems = problemService.getRecommendProblems(
                     roadmapProblemIds, type, 0L, rating, dailyGoal
             );
         }
 
-
-
         // 로드맵 마지막 문제 뒤에 새로운 문제 추가하기
         List<RoadmapProblem> sortedProblems = roadmap.getRoadmapProblems();
         int lastIndex = sortedProblems.get(sortedProblems.size() - 1).getSequence();
+
+        log.info("추가할 문제 수: {}", recommendProblems.size());
 
         int index = 0; // recommendProblems의 인덱스
         for(Problem problem: recommendProblems) {
