@@ -86,7 +86,7 @@ public class RoadmapController {
 
     // 로드맵 문제 추가(추천 문제)
     // roadmapId, authentication
-    @PostMapping("/{roadmapId}/concept-problem")
+    @PostMapping("/{roadmapId}/recommend-problem")
     public ApiResponse<RoadmapInfoResponse> addConceptProblem(@PathVariable Long roadmapId,
                                                               Authentication authentication) {
 
