@@ -453,13 +453,15 @@ public class OpenAIService {
 
     /* 답글 유효성 검사 함수(답글을 달 리뷰, 작성한 답글) */
     public Boolean isValidComment(String review, String comment) {
+
         String rule =
-                "You are a strict reply validator.\n" +
+                "You are a strict but fair reply validator.\n" +
                         "Given a review and its reply, decide if the reply is relevant and appropriate as a response.\n" +
                         "Rules:\n" +
-                        "- If the reply responds to, asks about, or disagrees with the review’s content (code, logic, performance, readability, etc.) → valid: true.\n" +
+                        "- If the reply responds to, asks about, disagrees with, or praises (compliments) the review’s content such as code, logic, readability, or performance → valid: true.\n" +
+                        "- Compliments or short positive acknowledgements like '좋은 코드네요', '깔끔합니다', '잘 봤어요' are valid if they relate to the code or review.\n" +
                         "- Ignore correctness.\n" +
-                        "- If off-topic, rude, meaningless, or chatting → valid: false with short Korean reason.\n" +
+                        "- If off-topic, rude, meaningless, or unrelated small talk (e.g., '오늘 점심 뭐먹지') → valid: false with short Korean reason.\n" +
                         "Output only JSON:\n" +
                         "{\"valid\": true}\n" +
                         "or\n" +
