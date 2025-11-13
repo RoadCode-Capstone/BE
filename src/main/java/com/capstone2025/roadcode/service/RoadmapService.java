@@ -67,7 +67,7 @@ public class RoadmapService {
 
         verifyRoadmapOwner(roadmap, member);
 
-        List<RoadmapProblem> roadmapProblems = roadmapProblemRepository.findByRoadmapId(roadmapId);
+        List<RoadmapProblem> roadmapProblems = roadmapProblemRepository.findByRoadmapIdOrderBySequenceAsc(roadmapId);
 
         List<RoadmapProblemResponse> roadmapProblemResponses = roadmapProblems.stream()
                 .map(RoadmapProblemResponse::from)

@@ -11,6 +11,6 @@ public interface RoadmapProblemRepository extends JpaRepository<RoadmapProblem, 
 
     Optional<RoadmapProblem> findByRoadmapIdAndStatus(Long roadmapId, RoadmapProblemStatus status);
 
-    List<RoadmapProblem> findByRoadmapId(Long roadmapId);
+    List<RoadmapProblem> findByRoadmapIdOrderBySequenceAsc(Long roadmapId);
 
 }
