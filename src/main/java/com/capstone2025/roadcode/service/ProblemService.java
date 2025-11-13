@@ -109,13 +109,12 @@ public class ProblemService {
             );
 
         } else {
-            return null; // 로드맵 타입 오류? 근데 이건 사전에 방지하는데..
+            throw new CustomException(ErrorCode.INVALID_ROADMAP_TYPE); // 로드맵 타입 오류
         }
 
         if (problemPage.isEmpty()) { // 조건에 맞는 문제 없음
             log.info("조건에 맞는 문제 없음"); // 출력 변경해도 상관 없음
-            // 응답 메시지 담아서 보내야하나..
-            return null;
+            throw new CustomException(ErrorCode.PROBLEM_NOT_FOUND);
         }
 
         return problemPage.getContent();
@@ -141,7 +140,8 @@ public class ProblemService {
 
         // 목록 가장 위에 있는 추천 문제 가져오기
         if(candidates.isEmpty()) {
-            log.info("조건에 맞는 추천 문제 없음"); // 메시지 남겨야하나?
+            log.info("조건에 맞는 추천 문제 없음");
+            throw new CustomException(ErrorCode.PROBLEM_NOT_FOUND);
         }
 
         return candidates.stream().findFirst();

@@ -63,7 +63,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
     /**
      * [개념강화 문제 추천 쿼리]
-     *
      * 1. 로드맵 문제 제외 (NOT IN roadmapProblemIds)
      * 2. 현재 문제보다 낮은 난이도 (< currentRating)
      * 3. 현재 문제의 태그와 일치하는 태그 (IN currentTagIds)
@@ -73,7 +72,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     @Query("SELECT p FROM Problem p " +
             "JOIN p.problemTags pt " +
             "WHERE p.id NOT IN :roadmapProblemIds " +
-            "  AND p.rating < :currentRating " +
+            "  AND p.rating <= :currentRating " +
             "  AND pt.tag.id IN :currentTagIds " +
             "GROUP BY p " +
             "ORDER BY COUNT(pt.tag.id) DESC, p.rating DESC")

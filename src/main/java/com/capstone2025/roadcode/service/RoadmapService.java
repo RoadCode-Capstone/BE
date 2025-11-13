@@ -221,8 +221,6 @@ public class RoadmapService {
             RoadmapProblem roadmapProblem = RoadmapProblem.create(
                     roadmap, conceptProblem.get(), currentSequence-1, RoadmapProblemStatus.IN_PROGRESS);
             roadmapProblemRepository.save(roadmapProblem);
-        } else {
-            // 없을 때 오류 날리기
         }
     }
 
@@ -258,9 +256,10 @@ public class RoadmapService {
             );
         }
 
-        // 로드맵 마지막 문제 뒤에 새로운 문제 추가하기
-        List<RoadmapProblem> sortedProblems = roadmap.getRoadmapProblems();
-        int lastIndex = sortedProblems.get(sortedProblems.size() - 1).getSequence();
+        // 로드맵 현재 진행 중인 문제 뒤에 새로운 문제 추가하기
+
+        // 현재 진행중인 문제 sequence 가져오기
+        int currentSequence = getCurrentProblemSequence(roadmapId);
 
         log.info("추가할 문제 수: {}", recommendProblems.size());
 
@@ -268,11 +267,9 @@ public class RoadmapService {
         for(Problem problem: recommendProblems) {
 
             // 첫번째 문제는 "IN_PROGRESS"
-            RoadmapProblemStatus status = (index == 1)
-                    ? RoadmapProblemStatus.IN_PROGRESS
-                    : RoadmapProblemStatus.NOT_STARTED;
+            RoadmapProblemStatus status = RoadmapProblemStatus.NOT_STARTED;
 
-            RoadmapProblem roadmapProblem = RoadmapProblem.create(roadmap, problem, lastIndex + index, status);
+            RoadmapProblem roadmapProblem = RoadmapProblem.create(roadmap, problem, currentSequence + index, status);
             roadmapProblemRepository.save(roadmapProblem);
 
             index++;
