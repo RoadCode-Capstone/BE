@@ -46,7 +46,7 @@ public class SubmissionService {
         Member member = memberService.findByEmail(email);
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
-        RoadmapInfoResponse roadmap = roadmapService.getRoadmapInfo(email, problemId);
+        RoadmapInfoResponse roadmap = roadmapService.getRoadmapInfo(email, request.getRoadmapId());
 
         LanguageType language = LanguageType.fromString(request.getLanguage());
         String code = request.getSourceCode();
