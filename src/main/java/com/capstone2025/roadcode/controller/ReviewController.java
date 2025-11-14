@@ -26,7 +26,7 @@ public class ReviewController {
     }
 
     @PostMapping("/reviews/{reviewId}/comments")
-    public ApiResponse<Void> createReview(Authentication authentication, @PathVariable Long reviewId, @RequestBody CommentCreateRequest request) {
+    public ApiResponse<Void> createComment(Authentication authentication, @PathVariable Long reviewId, @RequestBody CommentCreateRequest request) {
 
         String email = authentication.getName();
         reviewService.createComment(email, reviewId, request);

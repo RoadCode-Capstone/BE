@@ -30,6 +30,7 @@ public class ReviewService {
     private final CommentRepository commentRepository;
     private final SubmissionService submissionService;
     private final OpenAIService aiService;
+    private final PointService pointService;
 
     private static final long AI_MEMBER_ID = 1L;
     private final MemberRepository memberRepository;
@@ -83,6 +84,9 @@ public class ReviewService {
         // 답글 저장
         Comment comment = Comment.create(review, member, commentCreateRequest.getContent());
         commentRepository.save(comment);
+
+        // 포인트 추가
+        pointService.giveCommentPoint(member);
     }
 
     public ReviewListResponse getAllReviewsBySubmissionIdWithComments(

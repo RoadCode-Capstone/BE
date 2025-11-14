@@ -44,6 +44,14 @@ public class PointService {
         }
     }
 
+    // 리뷰 작성 포인트 지급
+    public void giveCommentPoint(Member member) {
+
+        Point point = Point.create(PointType.REVIEW, member); // 출석
+        pointRepository.save(point); // 리뷰 포인트 기록 저장
+
+    }
+
     // 날짜 별 포인트 내역 조회
     public PointHistoryByDateResponse getPointHistoryByDate(String email, String start, String end){
 
