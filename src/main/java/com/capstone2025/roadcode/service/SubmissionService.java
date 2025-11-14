@@ -2,13 +2,9 @@ package com.capstone2025.roadcode.service;
 
 import com.capstone2025.roadcode.common.LanguageType;
 import com.capstone2025.roadcode.dto.*;
-import com.capstone2025.roadcode.entity.Member;
-import com.capstone2025.roadcode.entity.Problem;
-import com.capstone2025.roadcode.entity.Submission;
-import com.capstone2025.roadcode.entity.Testcase;
+import com.capstone2025.roadcode.entity.*;
 import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
-import com.capstone2025.roadcode.repository.MemberRepository;
 import com.capstone2025.roadcode.repository.ProblemRepository;
 import com.capstone2025.roadcode.repository.SubmissionRepository;
 import com.capstone2025.roadcode.repository.TestcaseRepository;
@@ -16,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -38,22 +33,55 @@ public class SubmissionService {
     private final MemberService memberService;
     private final SubmissionRepository submissionRepository;
     private final RoadmapService roadmapService;
+    private final PointService pointService;
 
     @Value("${spring.code.save-dir}") // 로컬 환경 path(서버로 변경하면 바꿔야함)
     private String codeSaveDir;
     @Value("${spring.code.save-file}")
     private String codeFileName;
 
-    // 풀이 제출
-    @Transactional
-    public SubmitSolutionResponse submitSolution(String email, Long problemId, SubmitSolutionRequest request){
+    // 로드맵 풀이 제출 결과
+    public SubmitSolutionResponse submitRoadmapSolution(String email, Long problemId, SubmitSolutionRequest request) {
 
         Member member = memberService.findByEmail(email);
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+        RoadmapInfoResponse roadmap = roadmapService.getRoadmapInfo(email, problemId);
 
         LanguageType language = LanguageType.fromString(request.getLanguage());
         String code = request.getSourceCode();
+
+        List<TestcaseResult> testcaseResults = submitSolution(problemId, language, code); // 풀이 제출
+        boolean allPassed = isAllPassed(testcaseResults); // 테스트 케이스 전부 통과했는지 확인
+
+        // 5. db에 저장
+        Submission submission = Submission.create(problem, member, code, language, allPassed);
+        submissionRepository.save(submission);
+
+        // 6. 문제 풀이에 성공한 경우 로드맵 다음 문제로 수정
+        if(allPassed){
+            roadmapService.completeProblemAndAdvance(member, request.getRoadmapProblemId());
+            pointService.giveSolutionPoint(member); // 포인트 지급
+        }
+
+        // 7. 전체 결과를 응답에 추가
+        int dailyGoal = roadmap.getDailyGoal(); // 로드맵 일일 목표
+        LocalDateTime startDate = LocalDate.now().atStartOfDay(); // 오늘 00:00
+        LocalDateTime endDate = startDate.plusDays(1); // 내일 00:00
+        int dailyCompleted = submissionRepository.countByMemberIdAndCreatedAtBetweenAndIsSuccessTrue(
+                member.getId(), startDate, endDate
+                );
+
+        float achievementRate = getDailyAchievementRate(member, dailyGoal,  dailyCompleted); // 달성률
+
+        return new SubmitSolutionResponse(allPassed, testcaseResults, dailyGoal, dailyCompleted, achievementRate);
+
+
+    }
+
+
+    // 풀이 제출 결과 반환
+    public List<TestcaseResult> submitSolution(Long problemId, LanguageType language, String code){
 
         List<Testcase> testcases = testcaseRepository.findByProblemId(problemId);
         if (testcases.size() == 0) {
@@ -64,7 +92,6 @@ public class SubmissionService {
         DockerExecutionContext ctx = prepareCodeFile(language, code);
 
         List<TestcaseResult> testcaseResults = new ArrayList<>();
-        boolean allPassed = true;
 
         // 테스트케이스만큼 반복문 돌리기
         for (Testcase tc : testcases) {
@@ -77,26 +104,40 @@ public class SubmissionService {
             // 3. 도커 명령어 실행 및 결과 반환
             TestcaseResult testcaseResult = executeWithInput(pb, input, output);
             testcaseResults.add(testcaseResult);
-
-            if(!testcaseResult.isPassed()){
-                allPassed = false;
-            }
         }
 
         // 4. 임시 파일 삭제
         deleteCodeDirectory(ctx.getCodeDir());
 
-        // 5. db에 저장
-        Submission submission = Submission.create(problem, member, code, language, allPassed);
-        submissionRepository.save(submission);
+        return testcaseResults;
+    }
 
-        // 6. 문제 풀이에 성공한 경우 로드맵 다음 문제로 수정
-        if(request.getRoadmapId()!= null && allPassed){
-            roadmapService.completeProblemAndAdvance(request.getRoadmapProblemId());
+    /**
+     * 사용자의 일일 학습 달성률을 (퍼센트, 0-100)로 반환합니다.
+     * @return 달성률 (float)
+     */
+    public float getDailyAchievementRate(Member member, int dailyGoal, int dailyCompleted) {
+
+        if(dailyGoal <= dailyCompleted) { // 일일 학습 목표 달성
+            pointService.giveDailyGoalPoint(member); // 포인트 지급
+            return 100f;
         }
 
-        // 7. 전체 결과를 응답에 추가
-        return new SubmitSolutionResponse(allPassed, testcaseResults);
+        float achievementRate;
+
+        // 목표가 0일 경우 (0으로 나누기 방지)
+        if (dailyGoal == 0) {
+            // 목표가 0인데 완료했든 안했든, 목표는 '달성'한 것으로 봅니다.
+            achievementRate = 100.0f;
+        } else {
+            // (float) 형변환으로 정확한 소수점 계산
+            float rawRate = ((float) dailyCompleted / dailyGoal) * 100;
+
+            // 100%를 넘지 않도록 상한선 적용
+            achievementRate = Math.min(rawRate, 100.0f);
+        }
+
+        return achievementRate;
     }
 
     // 코드 파일 생성 및 도커 실행 dto 생성
@@ -216,17 +257,20 @@ public class SubmissionService {
     }
 
     // 레벨테스트 제출
-    public LevelTestResultResponse submitLevelTest(String email, LevelTestSubmissionsRequest request) {
+    public LevelTestResultResponse submitLevelTestSolution(String email, LevelTestSubmissionsRequest request) {
 
         List<Boolean> result = new ArrayList<>();
 
         for(SubmitLevelTestRequest solution : request.getSubmissions()){
 
-            SubmitSolutionRequest submitSolutionRequest = new SubmitSolutionRequest(
-                    solution.getLanguage(), solution.getSourceCode());
-            SubmitSolutionResponse response = submitSolution(email, solution.getProblemId(), submitSolutionRequest);
+            Long problemId = solution.getProblemId();
+            LanguageType language = LanguageType.fromString(solution.getLanguage());
+            String code = solution.getSourceCode();
 
-            if(response.isAllPassed()) {
+            List<TestcaseResult> testcaseResults = submitSolution(problemId, language, code); // 풀이 제출
+            boolean allPassed = isAllPassed(testcaseResults); // 테스트 케이스 전부 통과했는지 확인
+
+            if(allPassed) {
                 result.add(true);
             } else {
                 result.add(false);
@@ -238,6 +282,16 @@ public class SubmissionService {
                 .count();
 
         return new LevelTestResultResponse(request.getSubmissions().size(), result, (int)count);
+    }
+
+    // 테스트 케이스 통과 여부 판단
+    private boolean isAllPassed(List<TestcaseResult> testcaseResults) {
+        for(TestcaseResult testcaseResult : testcaseResults) {
+            if(!testcaseResult.isPassed()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // 특정 문제에 대한 다른 사람 풀이 목록 가져오기

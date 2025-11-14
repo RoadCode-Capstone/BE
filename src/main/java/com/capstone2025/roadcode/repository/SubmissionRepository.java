@@ -36,4 +36,11 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
             LocalDateTime endDate
     );
 
+    // 일일학습목표 달성 수 반환
+    int countByMemberIdAndCreatedAtBetweenAndIsSuccessTrue(
+            Long memberId,
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    );
+
 }

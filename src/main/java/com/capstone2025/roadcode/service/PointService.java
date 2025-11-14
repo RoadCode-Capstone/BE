@@ -52,6 +52,30 @@ public class PointService {
 
     }
 
+    // 문제 성공 포인트 지급
+    public void giveSolutionPoint(Member member) {
+
+        Point point = Point.create(PointType.PROBLEM_SOLVED, member); // 출석
+        pointRepository.save(point); // 기록 저장
+
+    }
+
+    // 일일학습목표 달성 포인트 지급
+    public void giveDailyGoalPoint(Member member) {
+
+        Point point = Point.create(PointType.DAILY_GOAL_COMPLETED, member); // 출석
+        pointRepository.save(point); // 기록 저장
+
+    }
+
+    // 로드맵 달성 포인트 지급
+    public void giveRoadmapPoint(Member member) {
+
+        Point point = Point.create(PointType.ROADMAP_COMPLETED, member); // 출석
+        pointRepository.save(point); // 기록 저장
+
+    }
+
     // 날짜 별 포인트 내역 조회
     public PointHistoryByDateResponse getPointHistoryByDate(String email, String start, String end){
 

@@ -17,4 +17,7 @@ public class SubmitSolutionResponse {
     private boolean allPassed;
     private List<TestcaseResult> testcaseResults = new ArrayList<>();
     // private long executionTime;
+    private int dailyGoal; // 일일 학습 목표
+    private int dailyCompleted; // 달성한 일일학습 목표 수
+    private float dailyAchievementRate; // 일일 학습 목표 달성률
 }

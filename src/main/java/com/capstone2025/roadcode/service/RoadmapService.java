@@ -30,6 +30,7 @@ public class RoadmapService {
     private final MemberService memberService;
     private final ProblemService problemService;
     private final TagService tagService;
+    private final PointService pointService;
 
     // 로드맵 정보 조회(현재 진행중인 문제도 함께 줌)
     public RoadmapInfoResponse getRoadmapInfo(String email, Long roadmapId) {
@@ -172,7 +173,7 @@ public class RoadmapService {
 
     // 로드맵에서 다음 문제로 넘어가기
     @Transactional
-    public void completeProblemAndAdvance(Long currentRoadmapProblemId) {
+    public void completeProblemAndAdvance(Member member, Long currentRoadmapProblemId) {
 
         RoadmapProblem currentProblem = roadmapProblemRepository.findById(
                         currentRoadmapProblemId)
@@ -190,6 +191,7 @@ public class RoadmapService {
             nextProblem.startProgress();
         } else { // 2-2. 다음 문제가 없을 경우, 로드맵 상태를 완료로 변경
             roadmap.complete();
+            pointService.giveRoadmapPoint(member);
         }
 
 
@@ -313,5 +315,4 @@ public class RoadmapService {
         return roadmapProblemRepository.findByRoadmapIdAndStatus(roadmapId, RoadmapProblemStatus.IN_PROGRESS)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
     }
-
 }
