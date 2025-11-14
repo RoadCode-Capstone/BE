@@ -35,12 +35,12 @@ public class PointService {
         LocalDateTime startDate = LocalDate.now().atStartOfDay(); // 오늘 00:00
         LocalDateTime endDate = startDate.plusDays(1); // 내일 00:00
 
-        if(!pointRepository.hasCheckedAttendanceToday(member.getId(), startDate, endDate)) {
+        if(pointRepository.hasCheckedAttendanceToday(member.getId(), startDate, endDate)) {
+            return "이미 출석 했습니다.";
+        } else {
             Point point = Point.create(PointType.ATTENDANCE, member); // 출석
             pointRepository.save(point); // 출석 기록 저장
             return "출석에 성공했습니다.";
-        } else {
-            return "이미 출석 했습니다.";
         }
     }
 

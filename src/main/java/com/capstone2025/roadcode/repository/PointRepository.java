@@ -21,9 +21,10 @@ public interface PointRepository extends JpaRepository<Point, Long> {
     // 출석 여부 체크 (중복 출석 방지)
     @Query("""
         SELECT COUNT(p) > 0 
-        FROM Point p 
+        FROM Point p
         WHERE p.pointType = 'ATTENDANCE'
         AND p.createdAt >= :startDate AND p.createdAt < :endDate
+        AND p.member.id = :memberId
     """)
     boolean hasCheckedAttendanceToday(
             Long memberId, LocalDateTime startDate, LocalDateTime endDate
