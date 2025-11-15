@@ -118,7 +118,10 @@ public class ReviewService {
         log.info("ai 리뷰 생성 시작");
 
         Submission submission = submissionService.findById(event.getSubmissionId());
-        String aiResponse = aiService.getAICodeReview(submission.getProblem(), submission.getSourceCode());
+        String aiResponse = aiService.getAICodeReview(
+                submission.getProblem(),
+                submission.getSourceCode(),
+                submission.getLanguage().toString());
 
         // db 조회없이 ai 사용자의 프록시 객체를 가져옴 (select 쿼리 발생 x)
         Member aiMember = memberRepository.getReferenceById(AI_MEMBER_ID);

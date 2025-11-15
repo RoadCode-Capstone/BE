@@ -395,10 +395,10 @@ public class OpenAIService {
     }
 
     /* {변경} AI 코드 리뷰 함수(문제 정보, 작성한 코드) */
-    public String getAICodeReview(Problem problem, String code) {
+    public String getAICodeReview(Problem problem, String code, String language) {
         String rule = "Review code briefly. Focus on complexity, correctness, edge cases, tests, and improvements. Write in Korean, casual tone, no numbering, just short sentences.";
         String prompt =
-                "Lang=" + "JAVA" +
+                "Lang=" + language +
                         "\nProblem=" + problem.getDescription() +
                         "\nInput=" + problem.getInputDescription() +
                         "\nOutput=" + problem.getOutputDescription() +
