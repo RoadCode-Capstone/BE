@@ -34,6 +34,7 @@ public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final RoadmapService roadmapService;
     private final PointService pointService;
+    private final ReviewService reviewService;
 
     @Value("${spring.code.save-dir}") // 로컬 환경 path(서버로 변경하면 바꿔야함)
     private String codeSaveDir;
@@ -62,6 +63,7 @@ public class SubmissionService {
         if(allPassed){
             roadmapService.completeProblemAndAdvance(member, request.getRoadmapProblemId());
             pointService.giveSolutionPoint(member); // 포인트 지급
+            reviewService.createAICodeReview(submission.getId()); // ai 리뷰 생성
         }
 
         // 7. 전체 결과를 응답에 추가
@@ -75,8 +77,6 @@ public class SubmissionService {
         float achievementRate = getDailyAchievementRate(member, dailyGoal,  dailyCompleted); // 달성률
 
         return new SubmitSolutionResponse(allPassed, testcaseResults, dailyGoal, dailyCompleted, achievementRate);
-
-
     }
 
 
