@@ -63,7 +63,7 @@ public class SubmissionService {
         if(allPassed){
             roadmapService.completeProblemAndAdvance(member, request.getRoadmapProblemId());
             pointService.giveSolutionPoint(member); // 포인트 지급
-            reviewService.createAICodeReview(submission.getId()); // ai 리뷰 생성
+            reviewService.createAICodeReview(submission.getId()); // ai 리뷰 생성 (자동)
         }
 
         // 7. 전체 결과를 응답에 추가
