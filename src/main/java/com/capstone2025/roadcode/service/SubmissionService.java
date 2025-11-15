@@ -64,13 +64,9 @@ public class SubmissionService {
 
         // 6. 문제 풀이에 성공한 경우 로드맵 다음 문제로 수정
         if(allPassed){
-            //roadmapService.completeProblemAndAdvance(member, request.getRoadmapProblemId());
-            //pointService.giveSolutionPoint(member); // 포인트 지급
-            SubmissionSuccessEvent event = new SubmissionSuccessEvent(
-                    submission.getId(),
-                    member.getId(),
-                    request.getRoadmapProblemId()
-            );
+            roadmapService.completeProblemAndAdvance(member, request.getRoadmapProblemId());
+            pointService.giveSolutionPoint(member); // 포인트 지급
+            SubmissionSuccessEvent event = new SubmissionSuccessEvent(submission.getId());
             eventPublisher.publishEvent(event);
             log.info("문제 풀이 성공");
         }

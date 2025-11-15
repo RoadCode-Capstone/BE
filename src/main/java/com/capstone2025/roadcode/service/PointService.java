@@ -55,13 +55,9 @@ public class PointService {
     }
 
     // 문제 성공 포인트 지급
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void giveSolutionPoint(SubmissionSuccessEvent event) {
+    public void giveSolutionPoint(Member member) {
 
         log.info("문제 성공 포인트 지급");
-
-        Member member = memberService.findById(event.getMemberId());
 
         Point point = Point.create(PointType.PROBLEM_SOLVED, member); // 출석
         pointRepository.save(point); // 기록 저장

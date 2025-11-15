@@ -175,15 +175,9 @@ public class RoadmapService {
     }
 
     // 로드맵에서 다음 문제로 넘어가기
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void completeProblemAndAdvance(SubmissionSuccessEvent event) {
+    public void completeProblemAndAdvance(Member member, Long currentRoadmapProblemId) {
 
         log.info("로드맵 다음 문제 넘어가기");
-
-        Member member = memberService.findById(event.getMemberId());
-        Long currentRoadmapProblemId = event.getRoadmapProblemId();
-
         RoadmapProblem currentProblem = roadmapProblemRepository.findById(
                         currentRoadmapProblemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
