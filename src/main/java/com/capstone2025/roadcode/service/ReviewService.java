@@ -11,6 +11,7 @@ import com.capstone2025.roadcode.repository.CommentRepository;
 import com.capstone2025.roadcode.repository.MemberRepository;
 import com.capstone2025.roadcode.repository.ReviewRepository;
 import com.mysql.cj.x.protobuf.MysqlxCursor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -113,6 +115,8 @@ public class ReviewService {
     @Async // (중요) 비동기 처리를 위해 @Async 추가
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void createAICodeReview(SubmissionSuccessEvent event) {
+        log.info("ai 리뷰 생성 시작");
+
         Submission submission = submissionService.findById(event.getSubmissionId());
         String aiResponse = aiService.getAICodeReview(submission.getProblem(), submission.getSourceCode());
 

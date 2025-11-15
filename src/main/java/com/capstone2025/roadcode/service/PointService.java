@@ -8,6 +8,7 @@ import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
 import com.capstone2025.roadcode.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PointService {
 
     private final PointRepository pointRepository;
@@ -56,6 +58,8 @@ public class PointService {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void giveSolutionPoint(SubmissionSuccessEvent event) {
+
+        log.info("문제 성공 포인트 지급");
 
         Member member = memberService.findById(event.getMemberId());
 
