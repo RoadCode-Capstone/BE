@@ -34,7 +34,7 @@ public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final RoadmapService roadmapService;
     private final PointService pointService;
-    private final ReviewService reviewService;
+    //private final ReviewService reviewService;
 
     @Value("${spring.code.save-dir}") // 로컬 환경 path(서버로 변경하면 바꿔야함)
     private String codeSaveDir;
