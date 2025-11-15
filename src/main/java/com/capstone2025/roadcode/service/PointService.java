@@ -57,7 +57,7 @@ public class PointService {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void giveSolutionPoint(SubmissionSuccessEvent event) {
 
-        Member member = event.getMember();
+        Member member = memberService.findById(event.getMemberId());
 
         Point point = Point.create(PointType.PROBLEM_SOLVED, member); // 출석
         pointRepository.save(point); // 기록 저장

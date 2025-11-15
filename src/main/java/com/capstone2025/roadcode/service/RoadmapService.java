@@ -179,7 +179,7 @@ public class RoadmapService {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void completeProblemAndAdvance(SubmissionSuccessEvent event) {
 
-        Member member = event.getMember();
+        Member member = memberService.findById(event.getMemberId());
         Long currentRoadmapProblemId = event.getRoadmapProblemId();
 
         RoadmapProblem currentProblem = roadmapProblemRepository.findById(

@@ -137,4 +137,10 @@ public class MemberService {
 
         member.updatePassword(newPassword, passwordEncoder);
     }
+
+    // 회원 객체 가져오기
+    public Member findById(Long memberId) {
+        return memberRepository.findByIdAndProviderAndIsDeletedFalse(memberId, AuthProvider.LOCAL)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
 }

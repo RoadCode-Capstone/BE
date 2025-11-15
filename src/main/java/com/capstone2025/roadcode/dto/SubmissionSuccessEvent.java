@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SubmissionSuccessEvent {
     private final Long submissionId;
-    private final Member member;
+    private final Long memberId; // 사용자 아이디
     private final Long roadmapProblemId; // 로드맵 문제가 아닐 경우 null일 수 있음
 }

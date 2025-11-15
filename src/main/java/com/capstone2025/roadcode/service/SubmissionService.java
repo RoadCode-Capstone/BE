@@ -68,7 +68,7 @@ public class SubmissionService {
             //pointService.giveSolutionPoint(member); // 포인트 지급
             SubmissionSuccessEvent event = new SubmissionSuccessEvent(
                     submission.getId(),
-                    member,
+                    member.getId(),
                     request.getRoadmapProblemId()
             );
             eventPublisher.publishEvent(event);
