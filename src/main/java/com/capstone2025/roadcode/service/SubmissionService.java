@@ -35,7 +35,7 @@ public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final RoadmapService roadmapService;
     private final PointService pointService;
-    private ApplicationEventPublisher eventPublisher; // 문제 풀이 성공 시 사용
+    private final ApplicationEventPublisher eventPublisher; // 문제 풀이 성공 시 사용
 
     @Value("${spring.code.save-dir}") // 로컬 환경 path(서버로 변경하면 바꿔야함)
     private String codeSaveDir;
