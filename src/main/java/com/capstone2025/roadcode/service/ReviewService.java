@@ -1,9 +1,6 @@
 package com.capstone2025.roadcode.service;
 
-import com.capstone2025.roadcode.dto.CommentCreateRequest;
-import com.capstone2025.roadcode.dto.ReviewCreateRequest;
-import com.capstone2025.roadcode.dto.ReviewListResponse;
-import com.capstone2025.roadcode.dto.ReviewWithCommentsResponse;
+import com.capstone2025.roadcode.dto.*;
 import com.capstone2025.roadcode.entity.Comment;
 import com.capstone2025.roadcode.entity.Member;
 import com.capstone2025.roadcode.entity.Review;
@@ -115,8 +112,8 @@ public class ReviewService {
 
     @Async // (중요) 비동기 처리를 위해 @Async 추가
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void createAICodeReview(Long submissionId) {
-        Submission submission = submissionService.findById(submissionId);
+    public void createAICodeReview(SubmissionSuccessEvent event) {
+        Submission submission = submissionService.findById(event.getSubmissionId());
         String aiResponse = aiService.getAICodeReview(submission.getProblem(), submission.getSourceCode());
 
         // db 조회없이 ai 사용자의 프록시 객체를 가져옴 (select 쿼리 발생 x)

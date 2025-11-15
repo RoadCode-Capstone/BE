@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -43,6 +44,7 @@ public class SubmissionService {
     private String codeFileName;
 
     // 로드맵 풀이 제출 결과
+    @Transactional
     public SubmitSolutionResponse submitRoadmapSolution(String email, Long problemId, SubmitSolutionRequest request) {
 
         Member member = memberService.findByEmail(email);
@@ -70,6 +72,7 @@ public class SubmissionService {
                     request.getRoadmapProblemId()
             );
             eventPublisher.publishEvent(event);
+            log.info("문제 풀이 성공");
         }
 
         // 7. 전체 결과를 응답에 추가
@@ -263,6 +266,7 @@ public class SubmissionService {
     }
 
     // 레벨테스트 제출
+    @Transactional
     public LevelTestResultResponse submitLevelTestSolution(String email, LevelTestSubmissionsRequest request) {
 
         List<Boolean> result = new ArrayList<>();

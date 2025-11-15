@@ -40,10 +40,10 @@ public class ReviewController {
         return ApiResponse.success(reviewService.getAllReviewsBySubmissionIdWithComments(email, submissionId));
     }
 
-    @PostMapping("/submissions/{submissionId}/ai-reviews")
-    public ApiResponse<Void> createAIReview(@PathVariable Long submissionId) {
-
-        reviewService.createAICodeReview(submissionId);
-        return ApiResponse.successWithMessage("ai 리뷰 작성에 성공했습니다.");
-    }
+//    @PostMapping("/submissions/{submissionId}/ai-reviews")
+//    public ApiResponse<Void> createAIReview(@PathVariable Long submissionId) {
+//
+//        reviewService.createAICodeReview(submissionId);
+//        return ApiResponse.successWithMessage("ai 리뷰 작성에 성공했습니다.");
+//    }
 }
