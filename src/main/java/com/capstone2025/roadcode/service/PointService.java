@@ -1,9 +1,6 @@
 package com.capstone2025.roadcode.service;
 
-import com.capstone2025.roadcode.dto.MemberPointRank;
-import com.capstone2025.roadcode.dto.MemberPointRanking;
-import com.capstone2025.roadcode.dto.PointHistoryByDateResponse;
-import com.capstone2025.roadcode.dto.PointHistoryByTypeResponse;
+import com.capstone2025.roadcode.dto.*;
 import com.capstone2025.roadcode.entity.Member;
 import com.capstone2025.roadcode.entity.PointType;
 import com.capstone2025.roadcode.entity.Point;
@@ -11,8 +8,11 @@ import com.capstone2025.roadcode.exception.CustomException;
 import com.capstone2025.roadcode.exception.ErrorCode;
 import com.capstone2025.roadcode.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,7 +53,11 @@ public class PointService {
     }
 
     // 문제 성공 포인트 지급
-    public void giveSolutionPoint(Member member) {
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void giveSolutionPoint(SubmissionSuccessEvent event) {
+
+        Member member = event.getMember();
 
         Point point = Point.create(PointType.PROBLEM_SOLVED, member); // 출석
         pointRepository.save(point); // 기록 저장

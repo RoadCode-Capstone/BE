@@ -10,8 +10,11 @@ import com.capstone2025.roadcode.repository.RoadmapProblemRepository;
 import com.capstone2025.roadcode.repository.RoadmapRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -172,8 +175,12 @@ public class RoadmapService {
     }
 
     // 로드맵에서 다음 문제로 넘어가기
-    @Transactional
-    public void completeProblemAndAdvance(Member member, Long currentRoadmapProblemId) {
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void completeProblemAndAdvance(SubmissionSuccessEvent event) {
+
+        Member member = event.getMember();
+        Long currentRoadmapProblemId = event.getRoadmapProblemId();
 
         RoadmapProblem currentProblem = roadmapProblemRepository.findById(
                         currentRoadmapProblemId)

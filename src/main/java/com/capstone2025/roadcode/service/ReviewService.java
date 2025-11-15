@@ -14,9 +14,13 @@ import com.capstone2025.roadcode.repository.CommentRepository;
 import com.capstone2025.roadcode.repository.MemberRepository;
 import com.capstone2025.roadcode.repository.ReviewRepository;
 import com.mysql.cj.x.protobuf.MysqlxCursor;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -109,8 +113,8 @@ public class ReviewService {
         return new ReviewListResponse(reviewResponse);
     }
 
-    // 임시 함수. 문제 풀이 성공했을 시 이 함수를 코드에 넣으면 될듯?
-    @Transactional
+    @Async // (중요) 비동기 처리를 위해 @Async 추가
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void createAICodeReview(Long submissionId) {
         Submission submission = submissionService.findById(submissionId);
         String aiResponse = aiService.getAICodeReview(submission.getProblem(), submission.getSourceCode());

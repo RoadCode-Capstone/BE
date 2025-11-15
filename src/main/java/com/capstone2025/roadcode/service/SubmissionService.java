@@ -11,6 +11,7 @@ import com.capstone2025.roadcode.repository.TestcaseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -34,7 +35,7 @@ public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final RoadmapService roadmapService;
     private final PointService pointService;
-    //private final ReviewService reviewService;
+    private ApplicationEventPublisher eventPublisher; // 문제 풀이 성공 시 사용
 
     @Value("${spring.code.save-dir}") // 로컬 환경 path(서버로 변경하면 바꿔야함)
     private String codeSaveDir;
@@ -61,9 +62,14 @@ public class SubmissionService {
 
         // 6. 문제 풀이에 성공한 경우 로드맵 다음 문제로 수정
         if(allPassed){
-            roadmapService.completeProblemAndAdvance(member, request.getRoadmapProblemId());
-            pointService.giveSolutionPoint(member); // 포인트 지급
-            //reviewService.createAICodeReview(submission.getId()); // ai 리뷰 생성
+            //roadmapService.completeProblemAndAdvance(member, request.getRoadmapProblemId());
+            //pointService.giveSolutionPoint(member); // 포인트 지급
+            SubmissionSuccessEvent event = new SubmissionSuccessEvent(
+                    submission.getId(),
+                    member,
+                    request.getRoadmapProblemId()
+            );
+            eventPublisher.publishEvent(event);
         }
 
         // 7. 전체 결과를 응답에 추가
