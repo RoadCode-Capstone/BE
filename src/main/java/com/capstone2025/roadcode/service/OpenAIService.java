@@ -194,7 +194,7 @@ public class OpenAIService {
         for (Problem p : problems) idToRating.put(p.getId(), p.getRating());
         problemIds.sort(Comparator.comparingInt(id -> idToRating.getOrDefault(id, Integer.MAX_VALUE)));
 
-        problemIds.add(0, 2195l); // Hello World 문제 추가(시연 후 해당 코드 삭제)
+        problemIds.add(0, 2125l); // 가위바위보 문제 추가(시연 후 해당 코드 삭제)
 
         // 선택한 문제 id 리스트 리턴
         return problemIds;
